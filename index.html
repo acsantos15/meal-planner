@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weekly Meal Cost App</title>
+<style>
+  body { font-family: Arial; margin: 20px; }
+  section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  input, select, button { margin: 5px; }
+</style>
+</head>
+<body>
+
+<h1>Weekly Meal Cost Computation</h1>
+
+<!-- PEOPLE -->
+<section>
+<h2>1. People</h2>
+Number of people: <input type="number" id="personCount" value="2" min="1">
+<button onclick="setPeople()">Set</button>
+<div id="peopleInputs"></div>
+</section>
+
+<section>
+<h2>2. Meals</h2>
+Meal name: <input id="mealName" oninput="loadRecipe()"><br>
+Day: 
+<select id="mealDay">
+<option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+<option>Thursday</option><option>Friday</option>
+<option>Saturday</option><option>Sunday</option>
+</select><br>
+
+Ingredients: <div id="ingredients"></div><br>
+
+<!-- ADD INGREDIENT BUTTON -->
+<button id="addIngredientBtn" onclick="addIngredientRow()" style="display:none;">+ Ingredient</button><br>
+
+<button onclick="addMeal()">Add Meal</button>
+
+<table id="mealTable">
+<tr><th>Day</th><th>Meal</th><th>Recipe Breakdown</th><th>Total Price</th><th>Per Person</th><th>Action</th></tr>
+</table>
+</section>
+
+<!-- PAYMENT -->
+<section>
+<h2>3. Payment</h2>
+Who paid: <select id="payer"></select><br>
+Extra debt: <input type="number" id="extraDebt" value="0"><br>
+<button onclick="computePayment()">Compute Payment</button>
+
+<div id="paymentResult"></div>
+</section>
+<script src="recipe.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
