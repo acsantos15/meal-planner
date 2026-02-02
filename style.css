@@ -2,6 +2,48 @@
   background-color:#e46050,
 }
 
-.checkbox-red {
-    accent-color: #e46050; /* modern browsers */
+.bg-primary {
+  background-color: #9678B6;
+}
+
+.text-primary {
+  color: #9678B6;
+}
+
+.border-primary {
+  border-color: #9678B6;
+}
+
+.bg-hover {
+  background-color: #9678B6;
+  transition: background-color 0.2s; /* smooth hover */
+}
+
+.bg-hover:hover {
+  background-color: #7B679A; /* color on hover */
+  color: white;
+}
+
+.bg-hover-nav {
+  background-color: white;
+  transition: background-color 0.2s; /* smooth hover */
+}
+
+.bg-hover-nav:hover {
+  background-color: #9678B6; /* color on hover */
+  color: white;
+}
+
+
+/* style.css */
+
+/* Pure black background with optional subtle stars */
+.bg-space {
+  background-color: #000; /* pure black */
+  background-image: 
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(white 1px, transparent 1px);
+  background-size: 50px 50px, 30px 30px, 80px 80px; /* star density */
+  background-position: 0 0, 10px 20px, 40px 60px;     /* scatter stars */
 }

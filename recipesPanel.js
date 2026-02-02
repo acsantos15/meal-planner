@@ -1,7 +1,18 @@
 function sidebarToggle() {
   const sidebar = document.getElementById("sidebar");
-  sidebar?.classList.toggle("hidden"); // optional chaining
+  const main = document.getElementById("mainContent");
+
+  if (sidebar.classList.contains("hidden")) {
+    // Show sidebar
+    sidebar.classList.remove("hidden");
+    main.style.marginRight = "16rem"; // sidebar width
+  } else {
+    // Hide sidebar
+    sidebar.classList.add("hidden");
+    main.style.marginRight = "0"; // main expands
+  }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const recipePanel = document.getElementById("recipePanel");
@@ -28,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li");
       li.textContent = r;
       li.className =
-        "cursor-pointer px-3 py-1 hover:bg-[#e46050] hover:text-white rounded";
+        "cursor-pointer px-3 py-1 bg-hover-nav hover:text-white rounded";
 
       li.addEventListener("click", () => {
         const mealInput = document.getElementById("mealName");

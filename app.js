@@ -23,17 +23,17 @@ function setPeople() {
         const input = document.createElement("input");
         input.type = "text";
         input.value = name;
-        input.className = "border border-[#e46050] px-2 py-1 rounded-l w-full";
+        input.className = "border border-primary px-2 py-1 rounded-l w-full";
         input.addEventListener("input", function() {
             people[i].name = this.value;
             updatePeople();
             loadWhoWillEat();
+            loadPayerInputs();
         });
 
         // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "bg-red-500 text-white px-3 py-1 rounded-r hover:bg-red-600 ml-1 transition-colors duration-200";
+        delBtn.textContent = "🗑️";
         delBtn.addEventListener("click", () => {
             people.splice(i, 1); // remove from array
             setPeopleFromArray(); // re-render inputs
@@ -47,6 +47,7 @@ function setPeople() {
 
     updatePeople();
     loadWhoWillEat();
+    loadPayerInputs();
 }
 
 // Helper to re-render people array (after delete)
@@ -62,19 +63,20 @@ function setPeopleFromArray() {
         const input = document.createElement("input");
         input.type = "text";
         input.value = p.name;
-        input.className = "border border-[#e46050] px-2 py-1 rounded-l w-full";
+        input.className = "border border-primary px-2 py-1 rounded-l w-full";
         input.addEventListener("input", function() {
             people[i].name = this.value;
             updatePeople();
             loadWhoWillEat();
+            loadPayerInputs();
         });
 
+        // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "bg-red-500 text-white px-3 py-1 rounded-r hover:bg-red-600 ml-1 transition-colors duration-200";
+        delBtn.textContent = "🗑️";
         delBtn.addEventListener("click", () => {
-            people.splice(i, 1);
-            setPeopleFromArray();
+            people.splice(i, 1); // remove from array
+            setPeopleFromArray(); // re-render inputs
         });
 
         container.appendChild(input);
@@ -84,6 +86,7 @@ function setPeopleFromArray() {
 
     updatePeople();
     loadWhoWillEat();
+    loadPayerInputs();
 }
 
 // Update dropdown or other elements
@@ -96,11 +99,6 @@ function updatePeople() {
     });
 }
 
-// Initialize default people on load
-document.addEventListener("DOMContentLoaded", () => {
-    setPeople();
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.getElementById("addIngredientBtn");
   if (addBtn) addBtn.style.display = "none";
@@ -108,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ===== LOAD RECIPE OR START BLANK =====
 function loadRecipe() {
-    const mealName = document.getElementById("mealName").value.toLowerCase();
+    const mealName = document.getElementById("mealName").value
     const div = document.getElementById("ingredients");
     div.innerHTML = ""; 
 
@@ -121,7 +119,7 @@ function loadRecipe() {
 
     if (recipeDB[mealName]) {
         recipeDB[mealName].forEach(ing => {
-            addIngredientRow(ing.name, ing.price); // use DOM method
+            addIngredientRow(ing.name); // use DOM method
         });
     } else {
         addIngredientRow();
@@ -130,91 +128,113 @@ function loadRecipe() {
 }
 
 
-function addIngredientRow(name = "", price = 0) {
+function addIngredientRow(name = "") {
     const div = document.getElementById("ingredients");
 
-    // Row container
     const row = document.createElement("div");
-    row.className = "ingredientRow flex items-center gap-2 mb-2 flex-wrap"; 
-    // note: 'ingredientRow' is required for querySelectorAll
+    row.className = "ingredientRow flex items-center gap-2 mb-2 flex-wrap";
 
-    // Name input
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     nameInput.value = name;
     nameInput.placeholder = "Ingredient name";
-    nameInput.className = "ingName border border-[#e46050] px-2 py-1 rounded w-2/5 text-lg"; 
-    // **class 'ingName' added here**
+    nameInput.className = "ingName border border-primary px-2 py-1 rounded w-2/5 text-lg";
 
-    // Price input
     const priceInput = document.createElement("input");
     priceInput.type = "number";
-    priceInput.value = price;
     priceInput.placeholder = "Price";
-    priceInput.className = "ingPrice border border-[#e46050] px-2 py-1 rounded w-1/5 text-lg"; 
-    // **class 'ingPrice' added here**
+    priceInput.className = "ingPrice border border-primary px-2 py-1 rounded w-1/5 text-lg";
 
-    // Delete button
     const delBtn = document.createElement("button");
-    delBtn.textContent = "\u{1F5D1}";
-    delBtn.className = "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors duration-200 text-lg";
-    delBtn.addEventListener("click", () => {
-        div.removeChild(row); // remove this ingredient row
-    });
+    delBtn.textContent = "🗑️";
+    delBtn.onclick = () => div.removeChild(row);
 
-    // Append elements to row
-    row.appendChild(document.createTextNode("Name: "));
-    row.appendChild(nameInput);
-    row.appendChild(document.createTextNode(" Price: "));
-    row.appendChild(priceInput);
-    row.appendChild(delBtn);
-
-    // Add row to container
+    row.append("Name: ", nameInput, " Price: ", priceInput, delBtn);
     div.appendChild(row);
 }
+
 
 // Who will eat
 function loadWhoWillEat() {
     const div = document.getElementById("whoWillEat");
-    div.innerHTML = "<h4 class='text-[#e46050] font-bold mb-2'>Who will eat this meal:</h4>";
+    div.innerHTML = "<h4 class='text-primary font-bold mb-2'>Who will eat this meal:</h4>";
 
     people.forEach((p, i) => {
         const container = document.createElement("div");
-        container.className = "flex items-center gap-4 mb-2 flex-wrap bg-white p-2 rounded border border-[#e46050]";
+        container.className = "flex items-center gap-2 mb-2 flex-wrap bg-white p-2 rounded border border-primary";
 
         const nameLabel = document.createElement("span");
         nameLabel.innerText = p.name;
         nameLabel.className = "font-semibold w-24";
 
-        // Lunch checkbox with visible red color using custom class
-        const lunch = document.createElement("input");
-        lunch.type = "checkbox";
-        lunch.value = "lunch";
-        lunch.id = `eat_lunch_${i}`;
-        lunch.className = "w-5 h-5 checkbox-red";
-
+        // Create Lunch checkbox
         const lunchLabel = document.createElement("label");
-        lunchLabel.innerText = "Lunch";
-        lunchLabel.htmlFor = lunch.id;
-        lunchLabel.className = "mr-4";
+        lunchLabel.className = "flex items-center gap-2 cursor-pointer";
 
-        // Dinner checkbox
-        const dinner = document.createElement("input");
-        dinner.type = "checkbox";
-        dinner.value = "dinner";
-        dinner.id = `eat_dinner_${i}`;
-        dinner.className = "w-5 h-5 checkbox-red";
+        const lunchInput = document.createElement("input");
+        lunchInput.type = "checkbox";
+        lunchInput.className = "hidden peer";
+        lunchInput.id = `eat_lunch_${i}`;
 
+        const lunchBox = document.createElement("div");
+        lunchBox.className = "w-5 h-5 border-2 border-primary rounded peer-checked:bg-[#9678B6] transition-colors";
+
+        const lunchText = document.createElement("span");
+        lunchText.innerText = "Lunch";
+
+        lunchLabel.appendChild(lunchInput);
+        lunchLabel.appendChild(lunchBox);
+        lunchLabel.appendChild(lunchText);
+
+        // Create Dinner checkbox
         const dinnerLabel = document.createElement("label");
-        dinnerLabel.innerText = "Dinner";
-        dinnerLabel.htmlFor = dinner.id;
+        dinnerLabel.className = "flex items-center gap-2 cursor-pointer";
+
+        const dinnerInput = document.createElement("input");
+        dinnerInput.type = "checkbox";
+        dinnerInput.className = "hidden peer";
+        dinnerInput.id = `eat_dinner_${i}`;
+
+        const dinnerBox = document.createElement("div");
+        dinnerBox.className = "w-5 h-5 border-2 border-primary rounded peer-checked:bg-[#9678B6] transition-colors";
+
+        const dinnerText = document.createElement("span");
+        dinnerText.innerText = "Dinner";
+
+        dinnerLabel.appendChild(dinnerInput);
+        dinnerLabel.appendChild(dinnerBox);
+        dinnerLabel.appendChild(dinnerText);
 
         container.appendChild(nameLabel);
-        container.appendChild(lunch);
         container.appendChild(lunchLabel);
-        container.appendChild(dinner);
         container.appendChild(dinnerLabel);
 
+        div.appendChild(container);
+    });
+}
+
+
+// Generate contribution inputs
+// ===== LOAD PAYER INPUTS =====
+function loadPayerInputs() {
+    const div = document.getElementById("payerInputs");
+    div.innerHTML = "<h4>Who paid for groceries:</h4>";
+
+    people.forEach((p, i) => {
+        const container = document.createElement("div");
+        container.className = "flex items-center gap-2 mb-2";
+
+        const label = document.createElement("label");
+        label.innerText = p.name;
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.id = `contrib_${i}`;
+        input.placeholder = "Amount Paid";
+        input.className = "border px-2 py-1 rounded w-24";
+
+        container.appendChild(label);
+        container.appendChild(input);
         div.appendChild(container);
     });
 }
@@ -259,7 +279,7 @@ function addMeal() {
     // Helper function to style each cell
     function createCell(row, index, content, extraClasses = "") {
         const cell = row.insertCell(index);
-        cell.className = `border border-[#e46050] px-4 py-2 ${extraClasses}`;
+        cell.className = `border border-primary px-4 py-2 ${extraClasses}`;
         cell.innerHTML = content;
         return cell;
     }
@@ -272,7 +292,7 @@ function addMeal() {
     2,
     ingredients
         .map(
-        ing => `<span class="inline-block border border-[#e46050] rounded px-2 py-1 mr-1 mb-1">${ing.name}: ${ing.price}</span>`
+        ing => `<span class="inline-block border border-primary rounded px-2 py-1 mr-1 mb-1">${ing.name}: ${ing.price}</span>`
         )
         .join("")
     );
@@ -284,14 +304,14 @@ function addMeal() {
     eaters
         .map(e => {
         const cost = (e.meals * perMealCost).toFixed(2);
-        return `<span class="inline-block border border-[#e46050] rounded px-2 py-1 mr-1 mb-1">${e.name} (${e.meals} meal${e.meals > 1 ? 's' : ''}): ${cost}</span>`;
+        return `<span class="inline-block border border-primary rounded px-2 py-1 mr-1 mb-1">${e.name} (${e.meals} meal${e.meals > 1 ? 's' : ''}): ${cost}</span>`;
         })
         .join("")
     );
     createCell(
         row,
         6, 
-        `<button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors duration-200">Delete</button>`,
+        `<button class="bg-primary text-white px-3 py-1 rounded bg-hover transition-colors duration-200">Delete</button>`,
         "text-center" 
     );
 
@@ -309,22 +329,109 @@ function addMeal() {
 
 
 
-// ===== COMPUTE PAYMENT =====
+// ===== COMPUTE PAYMENT WITH VALIDATION =====
 function computePayment() {
-    let payerIndex = Number(document.getElementById("payer").value);
-    let extra = Number(document.getElementById("extraDebt").value);
+    if (meals.length === 0) {
+        alert("No meals added yet!");
+        return;
+    }
 
-    let totalCost = meals.reduce((sum, meal) => sum + meal.total, 0) + extra;
-    let perPerson = totalCost / people.length;
+    // 1️⃣ Collect contributions
+    const contributions = people.map((p, i) => ({
+        name: p.name,
+        paid: Number(document.getElementById(`contrib_${i}`)?.value || 0)
+    }));
 
-    let html = `<h4>Total Cost: ${totalCost.toFixed(2)}</h4>`;
-    html += `<p>${people[payerIndex].name} paid</p><ul>`;
-    people.forEach((p,i)=>{
-        if(i !== payerIndex){
-            html += `<li>${p.name} owes ${perPerson.toFixed(2)}</li>`;
+    // 2️⃣ Compute total meals eaten
+    let totalMealsEaten = meals.reduce((sum, meal) => {
+        return sum + meal.eaters.reduce((s, e) => s + e.meals, 0);
+    }, 0);
+
+    if (totalMealsEaten === 0) {
+        alert("No one has eaten any meals yet!");
+        return;
+    }
+
+    // 3️⃣ Compute total cost
+    const totalCost = meals.reduce((sum, meal) => sum + meal.total, 0);
+
+    // 3️⃣b Validation: total contributions must match total cost
+    const totalPaid = contributions.reduce((sum, c) => sum + c.paid, 0);
+    if (totalPaid.toFixed(2) != totalCost.toFixed(2)) {
+        alert(`⚠️ Total contributions (${totalPaid.toFixed(2)}) do not match total meal cost (${totalCost.toFixed(2)}). Please adjust contributions.`);
+        return; // stop calculation if invalid
+    }
+
+    // 4️⃣ Compute per meal cost
+    const perMealCost = totalCost / totalMealsEaten;
+
+    // 5️⃣ Compute how much each person owes
+    const personOwes = people.map(p => {
+        const mealsCount = meals.reduce((sum, meal) => {
+            const eater = meal.eaters.find(e => e.name === p.name);
+            return sum + (eater ? eater.meals : 0);
+        }, 0);
+        return {
+            name: p.name,
+            meals: mealsCount,
+            owe: mealsCount * perMealCost
+        };
+    });
+
+    // 6️⃣ Compute balances (positive = owed money, negative = owes)
+    const balances = people.map(p => {
+        const owes = personOwes.find(po => po.name === p.name).owe;
+        const paid = contributions.find(c => c.name === p.name).paid;
+        return {
+            name: p.name,
+            balance: paid - owes
+        };
+    });
+
+    // 7️⃣ Generate settlement instructions
+    let creditors = balances.filter(b => b.balance > 0).sort((a, b) => b.balance - a.balance);
+    let debtors = balances.filter(b => b.balance < 0).sort((a, b) => a.balance - b.balance);
+
+    let settlements = [];
+    debtors.forEach(debtor => {
+        let remaining = -debtor.balance;
+        for (let i = 0; i < creditors.length; i++) {
+            if (remaining <= 0) break;
+            let creditor = creditors[i];
+            if (creditor.balance <= 0) continue;
+
+            let payAmount = Math.min(remaining, creditor.balance);
+            settlements.push(`${debtor.name} pays ${creditor.name}: ${payAmount.toFixed(2)}`);
+            remaining -= payAmount;
+            creditor.balance -= payAmount;
         }
     });
-    html += "</ul>";
+
+    // 8️⃣ Generate HTML
+    let html = `<h4>Total Meal Cost: ${totalCost.toFixed(2)}</h4>`;
+    html += `<h4>Contributions:</h4><ul>`;
+    contributions.forEach(c => html += `<li>${c.name} paid: ${c.paid.toFixed(2)}</li>`);
+    html += `</ul>`;
+
+    html += `<h4>Amount Owed Based on Meals:</h4><ul>`;
+    personOwes.forEach(po => html += `<li>${po.name} (${po.meals} meal${po.meals > 1 ? 's' : ''}): ${po.owe.toFixed(2)}</li>`);
+    html += `</ul>`;
+
+    html += `<h4>Settlement:</h4><ul>`;
+    if (settlements.length === 0) {
+        html += `<li>All settled, no one owes anything!</li>`;
+    } else {
+        settlements.forEach(s => html += `<li>${s}</li>`);
+    }
+    html += `</ul>`;
 
     document.getElementById("paymentResult").innerHTML = html;
 }
+
+
+// Initialize default people on load
+document.addEventListener("DOMContentLoaded", () => {
+    setPeople();
+    loadPayerInputs();
+});
+
