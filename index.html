@@ -35,35 +35,37 @@
           <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
             <div class="mb-2 border border-[#e46050] rounded border shadow-sm w-full">
               <div class="bg-[#e46050] px-2 py-3 border-solid">
-                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">People</p>
+                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Meal</p>
               </div>
-              <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
-                <div class="flex flex-wrap -mx-3 mb-6">
-                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label for="personCount" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Persons:</label>
-                    <div class="flex mt-2">
-                      <input id="personCount" type="number" class="border-2 border-[#e46050] rounded-l-[5px] px-3 py-2 text-xl w-full" value="5">
-                      <button onclick="setPeople()" class="bg-[#e46050] text-white px-4 py-2 rounded-r-[5px] hover:bg-[#d44a40] transition-colors duration-200">
-                        Set
-                      </button>
+              <div class="flex flex-wrap m-1">
+                <!-- First div -->
+                <div class="w-full md:w-1/3 px-3 mb-6">
+                  <div class="w-full p-3 bg-white border border-[#e46050] rounded">
+                    <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
+                      <div class="flex flex-wrap -mx-3 mb-6">
+                        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                          <label for="personCount" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Persons:</label>
+                          <div class="flex mt-2">
+                            <input id="personCount" type="number" class="border-2 border-[#e46050] rounded-l-[5px] px-3 py-2 text-xl w-full" value="5">
+                            <button onclick="setPeople()" class="bg-[#e46050] text-white px-4 py-2 rounded-r-[5px] hover:bg-[#d44a40] transition-colors duration-200">
+                              Set
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex flex-wrap -mx-3 mb-6">
+                        <div id="peopleInputs" class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-wrap -mx-3 mb-6">
-                  <div id="peopleInputs" class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
 
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
-            <div class="mb-2 border border-[#e46050] rounded border shadow-sm w-full">
-              <div class="bg-[#e46050] px-2 py-3 border-solid">
-                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Meal</p>
-              </div>
-              <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
-                <div class="flex flex-wrap -mx-3 mb-6">
+                <!-- Second div -->
+                <div class="w-full md:w-1/3 px-3 mb-6">
+                  <div class="w-full p-3 bg-white border border-[#e46050] rounded">
+                    <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label for="mealName" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Meal:</label>
                     <input oninput="loadRecipe()" id="mealName" type="text" class="border-2 border-[#e46050] rounded-[5px] px-3 py-2 text-xl w-full">
@@ -85,8 +87,8 @@
                   <div class="w-full px-3">
                     <label class="text-[#e46050] text-xl font-semibold mb-2">Ingredients:</label>
                     <div id="ingredients" class="flex flex-col gap-2"></div>
-                    <button id="addIngredientBtn" onclick="addIngredientRow()" class="bg-[#e46050] text-white px-4 py-2 rounded-[5px] text-xl mt-2 hover:bg-[#c9443f] transition-colors">
-                      + Ingredient
+                    <button id="addIngredientBtn" onclick="addIngredientRow()" class="bg-[#e46050] text-white px-4 py-2 rounded-[5px] text-sm w-full mt-2 hover:bg-[#c9443f] transition-colors">
+                      Add Ingredient
                     </button>
                     <div id="ingredientTemplate" class="hidden">
                       <div class="ingredientRow flex flex-col md:flex-row w-full gap-2">
@@ -110,6 +112,19 @@
                 <button onclick="addMeal()" class="bg-[#e46050] w-full text-white  px-2 py-2 rounded-[5px] text-xl mt-2 hover:bg-[#c9443f] transition-colors">
                   Add Meal
                 </button>
+                  </div>
+                </div>
+
+                <!-- Third div -->
+                <div class="w-full md:w-1/3 px-3 mb-6">
+                  <div class="w-full p-3 bg-white border border-[#e46050] rounded">
+                    <!-- Content 3 -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
+                
               </div>
               <!--table-->
               <div class="w-screen max-w-full overflow-x-auto p-2 sm:px-4">

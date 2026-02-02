@@ -156,7 +156,7 @@ function addIngredientRow(name = "", price = 0) {
 
     // Delete button
     const delBtn = document.createElement("button");
-    delBtn.textContent = "Delete";
+    delBtn.textContent = "\u{1F5D1}";
     delBtn.className = "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors duration-200 text-lg";
     delBtn.addEventListener("click", () => {
         div.removeChild(row); // remove this ingredient row
