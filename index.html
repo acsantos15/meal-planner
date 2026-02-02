@@ -143,12 +143,33 @@
               <div class="bg-primary px-2 py-3 border-solid">
                   <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Setlement</p>
               </div>
-              <div class="flex flex-wrap m-1">
-                <div id="payerInputs"></div>
-                <button onclick="computePayment()" id="computePaymentBtn" class="bg-green-600 text-white px-3 py-1 rounded mt-2">
+              <div class="flex flex-col md:flex-row gap-4 p-4 bg-white">
+                <!-- 1️⃣ Who Pays -->
+                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
+                  <h3 class="font-bold text-lg text-primary mb-2">Who Pays</h3>
+                  <div id="payerInputs" class="flex flex-col gap-2"></div>
+                  <button onclick="computePayment()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-3">
                     Compute Payment
-                </button>
-                <div id="paymentResult"></div>
+                  </button>
+                </div>
+
+                <!-- 2️⃣ Contributions -->
+                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
+                  <h3 class="font-bold text-lg text-primary mb-2">Contributions</h3>
+                  <div id="contributionsList" class="flex flex-col gap-1"></div>
+                </div>
+
+                <!-- 3️⃣ Amount Owed Based on Meals -->
+                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
+                  <h3 class="font-bold text-lg text-primary mb-2">Meal Eaten Amount</h3>
+                  <div id="amountOwedList" class="flex flex-col gap-1"></div>
+                </div>
+
+                <!-- 4️⃣ Settlement -->
+                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
+                  <h3 class="font-bold text-lg text-primary mb-2">Settlement</h3>
+                  <div id="paymentResult"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -176,21 +197,16 @@
     </div>
   </div>
 </div>
-<div class="fixed inset-x-0 bottom-0 z-auto p-4">
-  <div class="flex items-center justify-between rounded border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-    <span> </span>
-
-    <p class="text-center font-medium">
-      Lorem, ipsum dolor
-      <a href="#" class="inline-block underline"> sit amet consectetur </a>
-    </p>
-
-    <button type="button" aria-label="Dismiss" class="rounded border border-gray-300 bg-white p-1.5 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:hover:bg-gray-800">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+<div id="validationToast" class="fixed inset-x-0 bottom-0 z-50 p-4 hidden">
+  <div class="flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-2 text-red-900 dark:border-red-700 dark:bg-red-800 dark:text-red-100">
+    <span id="toastMessage" class="font-medium"></span>
+    <button type="button" aria-label="Dismiss" class="rounded border border-red-300 bg-white p-1.5 shadow-sm transition-colors hover:bg-red-50 dark:border-red-600 dark:bg-gray-900 dark:hover:bg-gray-800" onclick="hideToast()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
       </svg>
     </button>
   </div>
+</div>
 </div>
 </body>
 </html>

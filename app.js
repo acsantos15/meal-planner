@@ -327,12 +327,28 @@ function addMeal() {
     loadWhoWillEat(); 
 }
 
+function showToast(message) {
+    const toast = document.getElementById("validationToast");
+    const msg = document.getElementById("toastMessage");
+    msg.innerText = message;
+    toast.classList.remove("hidden");
+
+    // Optional: auto-hide after 5 seconds
+    setTimeout(() => {
+        toast.classList.add("hidden");
+    }, 5000);
+}
+
+function hideToast() {
+    document.getElementById("validationToast").classList.add("hidden");
+}
 
 
 // ===== COMPUTE PAYMENT WITH VALIDATION =====
+// ===== COMPUTE PAYMENT WITH SECTIONS =====
 function computePayment() {
     if (meals.length === 0) {
-        alert("No meals added yet!");
+        showToast("No meals added yet!");
         return;
     }
 
@@ -348,50 +364,42 @@ function computePayment() {
     }, 0);
 
     if (totalMealsEaten === 0) {
-        alert("No one has eaten any meals yet!");
+        showToast("No one has eaten any meals yet!");
         return;
     }
 
     // 3️⃣ Compute total cost
     const totalCost = meals.reduce((sum, meal) => sum + meal.total, 0);
 
-    // 3️⃣b Validation: total contributions must match total cost
+    // Validation
     const totalPaid = contributions.reduce((sum, c) => sum + c.paid, 0);
     if (totalPaid.toFixed(2) != totalCost.toFixed(2)) {
-        alert(`⚠️ Total contributions (${totalPaid.toFixed(2)}) do not match total meal cost (${totalCost.toFixed(2)}). Please adjust contributions.`);
-        return; // stop calculation if invalid
+        showToast(`⚠️ Total contributions (${totalPaid.toFixed(2)}) do not match total meal cost (${totalCost.toFixed(2)}).`);
+        return;
     }
 
-    // 4️⃣ Compute per meal cost
+    // 4️⃣ Per meal cost
     const perMealCost = totalCost / totalMealsEaten;
 
-    // 5️⃣ Compute how much each person owes
+    // 5️⃣ Amount owed by each person
     const personOwes = people.map(p => {
         const mealsCount = meals.reduce((sum, meal) => {
             const eater = meal.eaters.find(e => e.name === p.name);
             return sum + (eater ? eater.meals : 0);
         }, 0);
-        return {
-            name: p.name,
-            meals: mealsCount,
-            owe: mealsCount * perMealCost
-        };
+        return { name: p.name, meals: mealsCount, owe: mealsCount * perMealCost };
     });
 
-    // 6️⃣ Compute balances (positive = owed money, negative = owes)
+    // 6️⃣ Balances
     const balances = people.map(p => {
         const owes = personOwes.find(po => po.name === p.name).owe;
         const paid = contributions.find(c => c.name === p.name).paid;
-        return {
-            name: p.name,
-            balance: paid - owes
-        };
+        return { name: p.name, balance: paid - owes };
     });
 
-    // 7️⃣ Generate settlement instructions
+    // 7️⃣ Settlement
     let creditors = balances.filter(b => b.balance > 0).sort((a, b) => b.balance - a.balance);
     let debtors = balances.filter(b => b.balance < 0).sort((a, b) => a.balance - b.balance);
-
     let settlements = [];
     debtors.forEach(debtor => {
         let remaining = -debtor.balance;
@@ -399,7 +407,6 @@ function computePayment() {
             if (remaining <= 0) break;
             let creditor = creditors[i];
             if (creditor.balance <= 0) continue;
-
             let payAmount = Math.min(remaining, creditor.balance);
             settlements.push(`${debtor.name} pays ${creditor.name}: ${payAmount.toFixed(2)}`);
             remaining -= payAmount;
@@ -407,26 +414,28 @@ function computePayment() {
         }
     });
 
-    // 8️⃣ Generate HTML
-    let html = `<h4>Total Meal Cost: ${totalCost.toFixed(2)}</h4>`;
-    html += `<h4>Contributions:</h4><ul>`;
-    contributions.forEach(c => html += `<li>${c.name} paid: ${c.paid.toFixed(2)}</li>`);
-    html += `</ul>`;
+    // 8️⃣ Populate sections
+    const contributionsDiv = document.getElementById("contributionsList");
+    contributionsDiv.innerHTML = "";
+    contributions.forEach(c => {
+        contributionsDiv.innerHTML += `<div>${c.name} paid: ${c.paid.toFixed(2)}</div>`;
+    });
 
-    html += `<h4>Amount Owed Based on Meals:</h4><ul>`;
-    personOwes.forEach(po => html += `<li>${po.name} (${po.meals} meal${po.meals > 1 ? 's' : ''}): ${po.owe.toFixed(2)}</li>`);
-    html += `</ul>`;
+    const owedDiv = document.getElementById("amountOwedList");
+    owedDiv.innerHTML = "";
+    personOwes.forEach(po => {
+        owedDiv.innerHTML += `<div>${po.name} (${po.meals} meal${po.meals>1?"s":""}): ${po.owe.toFixed(2)}</div>`;
+    });
 
-    html += `<h4>Settlement:</h4><ul>`;
+    const settlementDiv = document.getElementById("paymentResult");
+    settlementDiv.innerHTML = "";
     if (settlements.length === 0) {
-        html += `<li>All settled, no one owes anything!</li>`;
+        settlementDiv.innerHTML = "<div>All settled, no one owes anything!</div>";
     } else {
-        settlements.forEach(s => html += `<li>${s}</li>`);
+        settlements.forEach(s => settlementDiv.innerHTML += `<div>${s}</div>`);
     }
-    html += `</ul>`;
-
-    document.getElementById("paymentResult").innerHTML = html;
 }
+
 
 
 // Initialize default people on load
