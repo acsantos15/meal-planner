@@ -1,54 +1,67 @@
+function sidebarToggle() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar?.classList.toggle("hidden"); // optional chaining
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const recipeBtn = document.getElementById("recipeBtn");
   const recipePanel = document.getElementById("recipePanel");
-  const closePanel = document.getElementById("closePanel");
   const recipeSearch = document.getElementById("recipeSearch");
   const addRecipeBtn = document.getElementById("addRecipeBtn");
   const recipeUl = document.getElementById("recipeList");
 
-  // Get recipes from recipes.js
-  let recipeList = Object.keys(recipeDB || {});
+  // Ensure recipeDB exists
+  if (typeof recipeDB === "undefined") window.recipeDB = {};
 
-  // Show / hide panel
-  recipeBtn.addEventListener("click", () => {
-    recipePanel.classList.remove("hidden");
-  });
+  // Convert recipeDB keys to array
+  let recipeList = Object.keys(recipeDB);
 
-  closePanel.addEventListener("click", () => {
-    recipePanel.classList.add("hidden");
-  });
-
-  // Render recipe list
+  // Render recipe list function
   function renderRecipes(filter = "") {
+    if (!recipeUl) return;
     recipeUl.innerHTML = "";
-    const filtered = recipeList.filter(r => r.toLowerCase().includes(filter.toLowerCase()));
+
+    const filtered = recipeList.filter(r =>
+      r.toLowerCase().includes(filter.toLowerCase())
+    );
+
     filtered.forEach(r => {
       const li = document.createElement("li");
       li.textContent = r;
+      li.className =
+        "cursor-pointer px-3 py-1 hover:bg-[#e46050] hover:text-white rounded";
+
       li.addEventListener("click", () => {
-        document.getElementById("mealName").value = r;
-        if (typeof loadRecipe === "function") loadRecipe(); // call existing function
-        recipePanel.classList.add("hidden");
+        const mealInput = document.getElementById("mealName");
+        if (mealInput) mealInput.value = r;
+
+        if (typeof loadRecipe === "function") loadRecipe();
+
+        if (recipePanel) recipePanel.classList.add("hidden");
       });
+
       recipeUl.appendChild(li);
     });
   }
 
   // Search recipes
-  recipeSearch.addEventListener("input", () => {
-    renderRecipes(recipeSearch.value);
-  });
+  if (recipeSearch) {
+    recipeSearch.addEventListener("input", () => {
+      renderRecipes(recipeSearch.value);
+    });
+  }
 
   // Add new recipe
-  addRecipeBtn.addEventListener("click", () => {
-    const newRecipe = prompt("Enter new recipe name:");
-    if (newRecipe && !recipeList.includes(newRecipe)) {
-      recipeList.push(newRecipe);
-      recipeDB[newRecipe] = [];
-      renderRecipes();
-    }
-  });
+  if (addRecipeBtn) {
+    addRecipeBtn.addEventListener("click", () => {
+      const newRecipe = prompt("Enter new recipe name:");
+      if (newRecipe && !recipeList.includes(newRecipe)) {
+        recipeList.push(newRecipe);
+        recipeDB[newRecipe] = [];
+        renderRecipes();
+      }
+    });
+  }
 
-  // Initial render
+  // Initial render on load
   renderRecipes();
 });

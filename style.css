@@ -1,57 +1,7 @@
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
+.bg-main{
+  background-color:#e46050,
 }
 
-section {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-td, th {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: center;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-
-/* Hidden by default */
-.hidden {
-  display: none;
-}
-
-/* Right Panel */
-#recipePanel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 100%;
-  background: #f4f4f4;
-  border-left: 1px solid #ccc;
-  padding: 20px;
-  z-index: 1000;
-}
-
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#recipeList li {
-  list-style: none;
-  padding: 5px 0;
-  border-bottom: 1px solid #ccc;
-  cursor: pointer;
+.checkbox-red {
+    accent-color: #e46050; /* modern browsers */
 }

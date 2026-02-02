@@ -4,22 +4,147 @@
 <meta charset="UTF-8">
 <title>Weekly Meal Cost App</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
+<script src="recipes.js"></script>
+<script src="app.js"></script>
+<script src="recipesPanel.js"></script>
 </head>
 <body>
+<!--Container -->
+<div class="mx-auto bg-grey-400">
+  <div class="min-h-screen flex flex-col">
+    <!--Header Section Starts Here-->
+    <header class="bg-[#e46050]">
+        <div class="flex justify-between">
+            <div class="p-1 flex flex-row items-center">
+              <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">Weekly Meal Cost Computation</p>
+            </div>
+            <div class="p-1 mx-3 inline-flex items-center">
+                <button class="bg-white text-[#e46050] border-2 border-white hover:bg-[#e46050] hover:text-white font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
+                  Recipes
+                </button>
+            </div>
+        </div>
+    </header>
+    <!--/Header-->
+    <!--Main-->
+    <div class="flex flex-1">
+      <main class="bg-white-300 flex-1 p-3 overflow-hidden">
+        <div class="flex flex-col">
+          <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+            <div class="mb-2 border border-[#e46050] rounded border shadow-sm w-full">
+              <div class="bg-[#e46050] px-2 py-3 border-solid">
+                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">People</p>
+              </div>
+              <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="personCount" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Persons:</label>
+                    <div class="flex mt-2">
+                      <input id="personCount" type="number" class="border-2 border-[#e46050] rounded-l-[5px] px-3 py-2 text-xl w-full" value="5">
+                      <button onclick="setPeople()" class="bg-[#e46050] text-white px-4 py-2 rounded-r-[5px] hover:bg-[#d44a40] transition-colors duration-200">
+                        Set
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div id="peopleInputs" class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
 
-<h1>Weekly Meal Cost Computation</h1>
-
-<!-- ===== Recipe Sliding Panel & Button ===== -->
-<button id="recipeBtn" class="recipeBtn">Recipes</button>
-
-<div id="recipePanel" class="hidden">
-  <div class="panelHeader">
-    <h3>Recipes</h3>
-    <button id="closePanel">&times;</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+            <div class="mb-2 border border-[#e46050] rounded border shadow-sm w-full">
+              <div class="bg-[#e46050] px-2 py-3 border-solid">
+                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Meal</p>
+              </div>
+              <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="mealName" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Meal:</label>
+                    <input oninput="loadRecipe()" id="mealName" type="text" class="border-2 border-[#e46050] rounded-[5px] px-3 py-2 text-xl w-full">
+                  </div>
+                  <div class="w-full md:w-1/2 px-3">
+                    <label for="mealDay" class="text-[#e46050] text-xl font-semibold relative top-2 ml-1 px-1 bg-white w-fit">Day:</label>
+                    <select id="mealDay" name="mealDay" class="border-2 border-[#e46050] rounded-[5px] px-3 py-2 text-xl w-full bg-transparent focus:outline-none">
+                      <option>Monday</option>
+                      <option>Tuesday</option>
+                      <option>Wednesday</option>
+                      <option>Thursday</option>
+                      <option>Friday</option>
+                      <option>Saturday</option>
+                      <option>Sunday</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full px-3">
+                    <label class="text-[#e46050] text-xl font-semibold mb-2">Ingredients:</label>
+                    <div id="ingredients" class="flex flex-col gap-2"></div>
+                    <button id="addIngredientBtn" onclick="addIngredientRow()" class="bg-[#e46050] text-white px-4 py-2 rounded-[5px] text-xl mt-2 hover:bg-[#c9443f] transition-colors">
+                      + Ingredient
+                    </button>
+                    <div id="ingredientTemplate" class="hidden">
+                      <div class="ingredientRow flex flex-col md:flex-row w-full gap-2">
+                        <div class="flex flex-col w-full">
+                          <label class="text-[#e46050] text-xl font-semibold mb-1">Name:</label>
+                          <input class="ingName border-4 border-black rounded-[5px] px-3 py-2 text-xl w-full bg-transparent focus:outline-none placeholder:text-black/25" type="text" placeholder="Ingredient name">
+                        </div>
+                        <div class="flex flex-col w-full">
+                          <label class="text-[#e46050] text-xl font-semibold mb-1">Price:</label>
+                          <input class="ingPrice border-4 border-black rounded-[5px] px-3 py-2 text-xl w-full bg-transparent focus:outline-none placeholder:text-black/25" type="number" placeholder="Price">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-wrap mx-3 mb-6">
+                  <div class="w-full px-3" id="whoWillEat">
+                    <h4>Who will eat this meal:</h4>
+                  </div>
+                </div>
+                <button onclick="addMeal()" class="bg-[#e46050] w-full text-white  px-2 py-2 rounded-[5px] text-xl mt-2 hover:bg-[#c9443f] transition-colors">
+                  Add Meal
+                </button>
+              </div>
+              <!--table-->
+              <div class="w-screen max-w-full overflow-x-auto p-2 sm:px-4">
+                <table id="mealTable" class="w-full border border-[#e46050] border-collapse text-sm bg-white">
+                  <thead>
+                    <tr>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Day</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Meal</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Ingredients Breakdown</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Total Price</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Per Meal Portion</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700">Who Eats</th>
+                      <th class="border border-[#e46050] px-4 py-3 font-semibold text-gray-700 text-center">Action</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!--/Main-->
+      <!--Recipe-->
+      <aside id="sidebar" class="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-4 border-[#e46050] hidden">
+        <p class="text-xl font-bold leading-tight tracking-tight text-[#e46050] md:text-xl ml-3">Recipes</p>
+        <form class="w-full max-w-sm">
+          <div class="flex items-center border-b border-[#e46050] py-2 mx-3">
+            <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2" type="text" placeholder="Search Recipe" id="recipeSearch">
+          </div>
+        </form>
+        <ul id="recipeList" class="mt-3 max-h-[400px] overflow-y-auto px-2"></ul>
+      </aside>
+      <!--/Recipe-->
+    </div>
   </div>
-  <input type="text" id="recipeSearch" placeholder="Search recipe...">
-  <button id="addRecipeBtn">+ Add Recipe</button>
-  <ul id="recipeList"></ul>
 </div>
 
 <section>
@@ -29,55 +154,6 @@ Number of people: <input type="number" id="personCount" value="2" min="1">
 <div id="peopleInputs"></div>
 </section>
 
-<!-- MEALS -->
-<section>
-<h2>2. Meals</h2>
-
-Meal name: <input id="mealName" oninput="loadRecipe()"><br>
-
-Day:
-<select id="mealDay">
-<option>Monday</option>
-<option>Tuesday</option>
-<option>Wednesday</option>
-<option>Thursday</option>
-<option>Friday</option>
-<option>Saturday</option>
-<option>Sunday</option>
-</select><br>
-
-Ingredients: 
-<div id="ingredients"></div>
-<br>
-<button id="addIngredientBtn" onclick="addIngredientRow()">+ Ingredient</button><br>
-
-<!-- Hidden template for cloning ingredients -->
-<div id="ingredientTemplate" style="display:none;">
-  <div class="ingredientRow">
-    <label>Name: <input class="ingName" type="text" placeholder="Ingredient name"></label>
-    <label>Price: <input class="ingPrice" type="number" placeholder="Price"></label>
-  </div>
-</div>
-
-<!-- Who will eat checkboxes -->
-<div id="whoWillEat">
-  <h4>Who will eat this meal:</h4>
-</div>
-
-<button onclick="addMeal()">Add Meal</button>
-
-<table id="mealTable">
-<tr>
-  <th>Day</th>
-  <th>Meal</th>
-  <th>Ingredients Breakdown</th>
-  <th>Total Price</th>
-  <th>Per Meal Portion</th>
-  <th>Who Eats</th>
-  <th>Action</th>
-</tr>
-</table>
-</section>
 
 <!-- PAYMENT -->
 <section>
@@ -89,10 +165,6 @@ Extra debt: <input type="number" id="extraDebt" value="0"><br>
 <div id="paymentResult"></div>
 </section>
 
-<!-- Recipe & App JS -->
-<script src="recipes.js"></script>
-<script src="app.js"></script>
-<script src="recipesPanel.js"></script>
 
 </body>
 </html>
