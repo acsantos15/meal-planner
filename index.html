@@ -17,6 +17,12 @@
     <!--Header Section Starts Here-->
     <header class="bg-primary fixed top-0 left-0 w-full z-50 h-16 flex items-center justify-between px-4">
       <p class="text-xl font-bold text-white">Weekly Meal Cost Computation</p>
+      <button
+  class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600"
+  onclick="openDebtModal()"
+>
+  Add Additional Debt
+</button>
       <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
         Recipes
       </button>
@@ -128,7 +134,7 @@
                       <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Ingredients Breakdown</th>
                       <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Total Price</th>
                       <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Per Meal Portion</th>
-                      <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Who Eats</th>
+                      <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Breakdown</th>
                       <th class="border border-primary px-4 py-3 font-semibold text-gray-700 text-center">Action</th>
                     </tr>
                   </thead>
@@ -197,6 +203,28 @@
     </div>
   </div>
 </div>
+<!-- ADD DEBT BUTTON -->
+
+
+<!-- DEBT MODAL -->
+<div id="debtModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded shadow-lg w-full max-w-2xl p-4 relative">
+    <h3 class="text-xl font-bold mb-4">Add Additional Debt</h3>
+
+    <div id="debtRows" class="flex flex-col gap-2 max-h-96 overflow-y-auto"></div>
+
+    <div class="flex justify-between mt-4">
+      <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onclick="addDebtRow()">Add Item</button>
+      <div>
+        <button class="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400 mr-2" onclick="closeDebtModal()">Cancel</button>
+        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" onclick="saveDebts()">Save Debts</button>
+      </div>
+    </div>
+
+    <button onclick="closeDebtModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+  </div>
+</div>
+
 <div id="validationToast" class="fixed inset-x-0 bottom-0 z-50 p-4 hidden">
   <div class="flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-2 text-red-900 dark:border-red-700 dark:bg-red-800 dark:text-red-100">
     <span id="toastMessage" class="font-medium"></span>
