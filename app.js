@@ -92,13 +92,6 @@ function addDebtRow() {
 
     paidBySelect.onchange = () => {
         validatePeopleChange(paidBySelect, requestedBySelect);
-        // Automatically update the "Who paid for groceries" section when a person is selected
-        const payerIndex = paidBySelect.value;
-        const paidAmountInput = document.getElementById(`contrib_${payerIndex}`);
-        if (paidAmountInput) {
-            const amount = Number(amountInput.value) || 0;
-            paidAmountInput.value = (Number(paidAmountInput.value) || 0) + amount;
-        }
     };
 
     requestedBySelect.onchange = () =>
@@ -194,6 +187,7 @@ function saveDebts() {
     }
 
     closeDebtModal();
+    updateSettlementPreview();
 }
 // ===== Save Debts =====
 
@@ -669,8 +663,14 @@ function clearMealForm() {
 // ===== ADD MEAL =====
 
 
+// ===== UPDATE SETTLEMENT PREVIEW =====
+function updateSettlementPreview() {
+    computePayment(true); // true = skip validation
+}
+// ===== UPDATE SETTLEMENT PREVIEW =====
+
 // ===== PAYMENT COMPUTATION =====
-function computePayment() {
+function computePayment(skipValidation = false) {
     if (meals.length === 0) {
         showToast("No meals added yet!");
         return;
@@ -694,7 +694,7 @@ function computePayment() {
     const totalDebt = additionalDebts.reduce((sum, d) => sum + d.amount, 0);
 
     const totalPaid = contributions.reduce((sum, c) => sum + c.paid, 0);
-    if (totalPaid.toFixed(2) != (totalMealCost + totalDebt).toFixed(2)) {
+    if (!skipValidation && totalPaid.toFixed(2) != (totalMealCost + totalDebt).toFixed(2)) {
         showToast(`Total contributions (${totalPaid.toFixed(2)}) do not match total cost (${(totalMealCost + totalDebt).toFixed(2)}).`);
         return;
     }
