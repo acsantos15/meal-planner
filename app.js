@@ -314,7 +314,7 @@ function addIngredientRow(name = "") {
     const div = document.getElementById("ingredients");
 
     const row = document.createElement("div");
-    row.className = "ingredientRow flex items-center gap-2 mb-2 flex-wrap";
+    row.className = "ingredientRow flex items-center gap-2 mb-2";
 
     const nameInput = document.createElement("input");
     nameInput.type = "text";
