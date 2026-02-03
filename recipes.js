@@ -1,5 +1,5 @@
 const recipeDB = {
-    "Other Dishes": [
+    "Spices & Condiments": [
         { name: "Onion", price: 0 },
         { name: "Garlic", price: 0 },
         { name: "Tomato", price: 0 },
@@ -17,6 +17,7 @@ const recipeDB = {
     "Sipo Egg": [
         { name: "Butter", price: 0 },
         { name: "Mixed Veggies", price: 0 },
+        { name: "Ham", price: 0 },
         { name: "All Purpose Cream", price: 0 },
         { name: "Quail Eggs", price: 0 },
     ],

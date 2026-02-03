@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="recipes.js"></script>
-<script src="app.js"></script>
 <script src="recipesPanel.js"></script>
 </head>
 <body>
@@ -17,9 +17,14 @@
     <!--Header Section Starts Here-->
     <header class="bg-primary fixed top-0 left-0 w-full z-50 h-16 flex items-center justify-between px-4">
       <p class="text-xl font-bold text-white">Weekly Meal Cost Computation</p>
-      <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
-        Recipes
-      </button>
+      <div class="flex items-center gap-2">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600 font-bold py-2 px-4 rounded" onclick="captureAndCopy()">
+          Copy as Image
+        </button>
+        <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
+          Recipes
+        </button>
+      </div>
     </header>
     <!--/Header-->
     <!--Main-->
@@ -149,7 +154,7 @@
                   <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Settlement</p>
               </div>
               <div class="flex flex-col md:flex-row gap-4 p-4 bg-white">
-                <!-- 1?¸âƒ£ Who Pays -->
+                <!-- 1?ï¿½ï¿½âƒ£ Who Pays -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Who Pays</h3>
                   <div id="payerInputs" class="flex flex-col gap-2"></div>
@@ -158,19 +163,19 @@
                   </button>
                 </div>
 
-                <!-- 2?¸âƒ£ Contributions -->
+                <!-- 2?ï¿½ï¿½âƒ£ Contributions -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Contributions</h3>
                   <div id="contributionsList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 3?¸âƒ£ Amount Owed Based on Meals -->
+                <!-- 3?ï¿½ï¿½âƒ£ Amount Owed Based on Meals -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Breakdown</h3>
                   <div id="amountOwedList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 4?¸âƒ£ Settlement -->
+                <!-- 4?ï¿½ï¿½âƒ£ Settlement -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Settlement</h3>
                   <div id="paymentResult"></div>
@@ -235,4 +240,5 @@
 </div>
 <!-- TOAST ERROR -->
 </body>
+<script src="app.js"></script>
 </html>

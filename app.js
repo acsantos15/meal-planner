@@ -92,13 +92,6 @@ function addDebtRow() {
 
     paidBySelect.onchange = () => {
         validatePeopleChange(paidBySelect, requestedBySelect);
-        // Automatically update the "Who paid for groceries" section when a person is selected
-        const payerIndex = paidBySelect.value;
-        const paidAmountInput = document.getElementById(`contrib_${payerIndex}`);
-        if (paidAmountInput) {
-            const amount = Number(amountInput.value) || 0;
-            paidAmountInput.value = (Number(paidAmountInput.value) || 0) + amount;
-        }
     };
 
     requestedBySelect.onchange = () =>
@@ -130,24 +123,41 @@ function addDebtRowToTable(debt) {
     const table = document.getElementById("mealTable");
     const row = table.insertRow(-1);
 
-    // Style debt row
-    row.className = "bg-primary text-white";
-    row.insertCell(0).innerText = "";
-    row.insertCell(1).innerHTML = `<strong>${debt.item}</strong>`;
-    row.insertCell(2).innerHTML = `<span>Additional Debt</span>`;
-    row.insertCell(3).innerHTML = `Price: <strong>${debt.amount.toFixed(2)}</strong>`;
-    row.insertCell(4).innerHTML = `Owed: <strong>${debt.amount.toFixed(2)}</strong>`;
-    row.insertCell(5).innerHTML = `
-        Requested by: <strong>${debt.requestedBy}</strong><br>
-        Paid by: <strong>${debt.boughtBy}</strong>
+    // Style debt row with better design
+    row.className = "bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-150 hover:to-pink-150 transition-colors";
+    
+    row.insertCell(0).innerHTML = `<span class='text-red-600 font-bold text-lg'>💳</span>`;
+    
+    const itemCell = row.insertCell(1);
+    itemCell.innerHTML = `<strong class='text-gray-800'>${debt.item}</strong>`;
+    itemCell.className = "font-semibold";
+    
+    const typeCell = row.insertCell(2);
+    typeCell.innerHTML = `<span class='bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold'>Additional Debt</span>`;
+    
+    const priceCell = row.insertCell(3);
+    priceCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    priceCell.className = "text-center";
+    
+    const owedCell = row.insertCell(4);
+    owedCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    owedCell.className = "text-center";
+    
+    const detailsCell = row.insertCell(5);
+    detailsCell.innerHTML = `
+        <div class='text-sm'>
+            <div class='mb-1'><span class='font-semibold text-gray-700'>Requested:</span> <strong class='text-gray-800'>${debt.requestedBy}</strong></div>
+            <div><span class='font-semibold text-gray-700'>Paid by:</span> <strong class='text-gray-800'>${debt.boughtBy}</strong></div>
+        </div>
     `;
 
     const actionCell = row.insertCell(6);
     actionCell.innerHTML = `
-        <button class="bg-del text-white px-3 py-1 rounded bg-del-hover">
+        <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">
             Delete
         </button>
     `;
+    actionCell.className = "text-center";
 
     actionCell.querySelector("button").onclick = () => {
         additionalDebts = additionalDebts.filter(d => d !== debt);
@@ -177,6 +187,7 @@ function saveDebts() {
     }
 
     closeDebtModal();
+    updateSettlementPreview();
 }
 // ===== Save Debts =====
 
@@ -314,7 +325,7 @@ function addIngredientRow(name = "") {
     const div = document.getElementById("ingredients");
 
     const row = document.createElement("div");
-    row.className = "ingredientRow flex items-center gap-2 mb-2 flex-wrap";
+    row.className = "ingredientRow flex items-center gap-2 mb-2";
 
     const nameInput = document.createElement("input");
     nameInput.type = "text";
@@ -395,6 +406,43 @@ function loadWhoWillEat() {
 
         div.appendChild(container);
     });
+
+    // Add Check All buttons at the bottom
+    const checkAllContainer = document.createElement("div");
+    checkAllContainer.className = "flex items-center gap-2 mt-4 pt-3 border-t border-primary";
+
+    const checkAllLunchBtn = document.createElement("button");
+    checkAllLunchBtn.textContent = "Check All Lunch";
+    checkAllLunchBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
+    checkAllLunchBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_lunch_${i}`).checked = true;
+        });
+    };
+
+    const checkAllDinnerBtn = document.createElement("button");
+    checkAllDinnerBtn.textContent = "Check All Dinner";
+    checkAllDinnerBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
+    checkAllDinnerBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_dinner_${i}`).checked = true;
+        });
+    };
+
+    const uncheckAllBtn = document.createElement("button");
+    uncheckAllBtn.textContent = "Uncheck All";
+    uncheckAllBtn.className = "bg-gray-400 text-white px-3 py-1 rounded text-sm hover:bg-gray-500";
+    uncheckAllBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_lunch_${i}`).checked = false;
+            document.getElementById(`eat_dinner_${i}`).checked = false;
+        });
+    };
+
+    checkAllContainer.appendChild(checkAllLunchBtn);
+    checkAllContainer.appendChild(checkAllDinnerBtn);
+    checkAllContainer.appendChild(uncheckAllBtn);
+    div.appendChild(checkAllContainer);
 }
 // ===== WHO WILL EAT =====
 
@@ -402,23 +450,36 @@ function loadWhoWillEat() {
 // ===== LOAD PAYER INPUTS =====
 function loadPayerInputs() {
     const div = document.getElementById("payerInputs");
-    div.innerHTML = "<h4>Who paid for groceries:</h4>";
+    div.innerHTML = "";
 
     people.forEach((p, i) => {
         const container = document.createElement("div");
-        container.className = "flex items-center gap-2 mb-2";
-
-        const label = document.createElement("label");
-        label.innerText = p.name;
+        container.className = "border-b border-gray-300 py-2 px-2 hover:bg-purple-50 rounded transition-colors";
 
         const input = document.createElement("input");
         input.type = "number";
         input.id = `contrib_${i}`;
-        input.placeholder = "Amount Paid";
-        input.className = "border px-2 py-1 rounded w-24";
+        input.placeholder = "Amount";
+        input.className = "border-2 border-primary rounded px-3 py-2 w-24 text-right font-semibold focus:outline-none";
 
-        container.appendChild(label);
-        container.appendChild(input);
+        const row = document.createElement("div");
+        row.className = "flex justify-between items-center";
+        
+        const label = document.createElement("span");
+        label.innerText = p.name;
+        label.className = "font-semibold text-gray-700";
+        
+        const amountDisplay = document.createElement("div");
+        amountDisplay.className = "flex items-center gap-1";
+        const currencyLabel = document.createElement("span");
+        currencyLabel.innerHTML = "₱";
+        currencyLabel.className = "text-gray-500 font-semibold";
+        amountDisplay.appendChild(currencyLabel);
+        amountDisplay.appendChild(input);
+
+        row.appendChild(label);
+        row.appendChild(amountDisplay);
+        container.appendChild(row);
         div.appendChild(container);
     });
 }
@@ -501,19 +562,46 @@ function addMeal() {
     }
 
     // Create cells with bullet points for ingredients and eaters
-    const ingredientsList = ingredients.map(i => `<li>${i.name}: \u20B1${i.price.toFixed(2)}</li>`).join("");
-    const eatersList = eaters.map(e => `<li>${e.name} (${e.meals} meal${e.meals > 1 ? 's' : ''})</li>`).join("");
+    const ingredientsList = ingredients.map(i => `<li class='text-sm text-gray-700'>${i.name}: <strong>₱${i.price.toFixed(2)}</strong></li>`).join("");
+    const eatersList = eaters.map(e => `<li class='text-sm text-gray-700'>${e.name} <span class='text-blue-600 font-semibold'>(${e.meals} meal${e.meals > 1 ? 's' : ''})</span></li>`).join("");
 
-    createCell(row, 0, day);
-    createCell(row, 1, name);
-    createCell(row, 2, `<ul>${ingredientsList}</ul>`);
-    createCell(row, 3, total.toFixed(2));
-    createCell(row, 4, perMealPortion.toFixed(2));
-    createCell(row, 5, `<ul>${eatersList}</ul>`);
-    createCell(row, 6, `
-        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-center mr-2">Edit</button>
-        <button class="bg-del bg-del-hover text-white px-3 py-1 rounded text-center">Delete</button>
-    `);
+    // Day cell
+    const dayCell = row.cells[0] || row.insertCell(0);
+    dayCell.className = "border border-primary px-4 py-2 font-semibold text-gray-800 bg-blue-50";
+    dayCell.innerHTML = day;
+
+    // Meal name cell
+    const nameCell = row.cells[1] || row.insertCell(1);
+    nameCell.className = "border border-primary px-4 py-2 font-bold text-lg text-gray-800";
+    nameCell.innerHTML = name;
+
+    // Ingredients cell
+    const ingredientsCell = row.cells[2] || row.insertCell(2);
+    ingredientsCell.className = "border border-primary px-4 py-2";
+    ingredientsCell.innerHTML = `<ul class='list-disc list-inside'>${ingredientsList}</ul>`;
+
+    // Total price cell
+    const totalCell = row.cells[3] || row.insertCell(3);
+    totalCell.className = "border border-primary px-4 py-2 text-center font-bold text-green-600 text-lg";
+    totalCell.innerHTML = `₱${total.toFixed(2)}`;
+
+    // Per meal portion cell
+    const perMealCell = row.cells[4] || row.insertCell(4);
+    perMealCell.className = "border border-primary px-4 py-2 text-center font-semibold text-blue-600";
+    perMealCell.innerHTML = `₱${perMealPortion.toFixed(2)}`;
+
+    // Eaters cell
+    const eatersCell = row.cells[5] || row.insertCell(5);
+    eatersCell.className = "border border-primary px-4 py-2";
+    eatersCell.innerHTML = `<ul class='list-disc list-inside'>${eatersList}</ul>`;
+
+    // Action cell
+    const actionCell = row.cells[6] || row.insertCell(6);
+    actionCell.className = "px-4 py-2 flex flex-wrap items-center justify-center gap-2";
+    actionCell.innerHTML = `
+        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold transition-colors">Edit</button>
+        <button class="bg-del bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">Delete</button>
+    `;
 
     // Edit functionality
     const editBtn = row.cells[6].querySelector(".bg-edit");
@@ -575,8 +663,14 @@ function clearMealForm() {
 // ===== ADD MEAL =====
 
 
+// ===== UPDATE SETTLEMENT PREVIEW =====
+function updateSettlementPreview() {
+    computePayment(true); // true = skip validation
+}
+// ===== UPDATE SETTLEMENT PREVIEW =====
+
 // ===== PAYMENT COMPUTATION =====
-function computePayment() {
+function computePayment(skipValidation = false) {
     if (meals.length === 0) {
         showToast("No meals added yet!");
         return;
@@ -600,7 +694,7 @@ function computePayment() {
     const totalDebt = additionalDebts.reduce((sum, d) => sum + d.amount, 0);
 
     const totalPaid = contributions.reduce((sum, c) => sum + c.paid, 0);
-    if (totalPaid.toFixed(2) != (totalMealCost + totalDebt).toFixed(2)) {
+    if (!skipValidation && totalPaid.toFixed(2) != (totalMealCost + totalDebt).toFixed(2)) {
         showToast(`Total contributions (${totalPaid.toFixed(2)}) do not match total cost (${(totalMealCost + totalDebt).toFixed(2)}).`);
         return;
     }
@@ -656,22 +750,57 @@ function computePayment() {
 
     // Display
     const contributionsDiv = document.getElementById("contributionsList");
-    contributionsDiv.innerHTML = contributions.map(c => `<div>${c.name} paid: ${c.paid.toFixed(2)}</div>`).join("");
+    contributionsDiv.innerHTML = contributions.map((c, idx) => `
+        <div class='border-b border-gray-300 py-2 px-2 hover:bg-green-50 rounded transition-colors'>
+            <div class='flex justify-between items-center'>
+                <span class='font-semibold text-gray-700'>${c.name}</span>
+                <span class='text-lg font-bold text-green-600'>₱${c.paid.toFixed(2)}</span>
+            </div>
+        </div>
+    `).join("");
 
     const owedDiv = document.getElementById("amountOwedList");
-    owedDiv.innerHTML = personOwes.map(po => {
-        const debtHtml = po.debtDetails.map(d => `${d.item} (Debt): ${d.cost.toFixed(2)}`).join(", ");
+    owedDiv.innerHTML = personOwes.map((po, idx) => {
+        const debtHtml = po.debtDetails.length > 0 
+            ? po.debtDetails.map(d => `<div class='text-sm text-gray-600 mt-1'>• ${d.item}: ₱${d.cost.toFixed(2)}</div>`).join("")
+            : "<div class='text-sm text-gray-500 mt-1'>• None</div>";
 
-        return `<div>
-            <strong>${po.name}</strong>: Total Owe: ${po.totalOwe.toFixed(2)}<br>
-            Debts: ${debtHtml}
-        </div>`;
+        return `
+            <div class='border-b border-gray-300 py-3 px-2 hover:bg-yellow-50 rounded transition-colors'>
+                <div class='flex justify-between items-start mb-2'>
+                    <span class='font-semibold text-gray-700'>${po.name}</span>
+                    <span class='text-lg font-bold text-orange-600'>₱${po.totalOwe.toFixed(2)}</span>
+                </div>
+                <div class='ml-2'>
+                    ${debtHtml}
+                </div>
+            </div>
+        `;
     }).join("");
 
     const settlementDiv = document.getElementById("paymentResult");
     settlementDiv.innerHTML = settlements.length === 0
-        ? "<div>All settled, no one owes anything!</div>"
-        : settlements.map(s => `<div>${s}</div>`).join("");
+        ? "<div class='text-center text-green-600 font-bold py-6 text-lg'>✓ All settled, no one owes anything!</div>"
+        : settlements.map((s, idx) => {
+            // Parse the settlement string to extract names and amount
+            const match = s.match(/(.+?) pays (.+?): (.+)/);
+            if (match) {
+                const [_, payer, receiver, amount] = match;
+                return `
+                    <div class='border-b border-gray-300 py-2 px-2 hover:bg-blue-50 rounded transition-colors'>
+                        <div class='flex justify-between items-center'>
+                            <div class='flex items-center gap-2 flex-1'>
+                                <span class='font-semibold text-gray-700'>${payer.trim()}</span>
+                                <span class='text-blue-500 font-bold'>→</span>
+                                <span class='font-semibold text-gray-700'>${receiver.trim()}</span>
+                            </div>
+                            <span class='font-bold text-blue-600'>₱${amount.trim()}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            return `<div class='border-b border-gray-300 py-2 px-2 hover:bg-blue-50 rounded transition-colors'>${s}</div>`;
+        }).join("");
 }
 
 // ===== PAYMENT COMPUTATION =====
@@ -700,3 +829,109 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPayerInputs();
 });
 // ===== INITIALIZATION =====
+
+// ===== CAPTURE AND COPY AS IMAGE =====
+async function captureAndCopy() {
+    try {
+        showToast("Capturing image...");
+        
+        // Create a container for screenshot
+        const screenshotContainer = document.createElement("div");
+        screenshotContainer.style.position = "fixed";
+        screenshotContainer.style.top = "0";
+        screenshotContainer.style.left = "0";
+        screenshotContainer.style.width = "1400px";
+        screenshotContainer.style.backgroundColor = "white";
+        screenshotContainer.style.padding = "20px";
+        screenshotContainer.style.zIndex = "-9999";
+        screenshotContainer.style.overflow = "visible";
+
+        // Style for titles
+        const titleStyle = {
+            fontSize: "24px",
+            fontWeight: "bold",
+            marginBottom: "15px",
+            marginTop: "20px",
+            color: "#333"
+        };
+
+        // MEAL TABLE Section
+        const mealDiv = document.createElement("div");
+        const mealTitle = document.createElement("h2");
+        mealTitle.textContent = "MEAL TABLE";
+        Object.assign(mealTitle.style, titleStyle);
+        mealDiv.appendChild(mealTitle);
+        
+        const mealTableClone = document.getElementById("mealTable").cloneNode(true);
+        mealTableClone.style.marginBottom = "30px";
+        mealDiv.appendChild(mealTableClone);
+
+        // CONTRIBUTIONS Section
+        const contribDiv = document.createElement("div");
+        const contribTitle = document.createElement("h2");
+        contribTitle.textContent = "CONTRIBUTIONS";
+        Object.assign(contribTitle.style, titleStyle);
+        contribDiv.appendChild(contribTitle);
+        
+        const contribList = document.getElementById("contributionsList").cloneNode(true);
+        contribList.style.marginBottom = "30px";
+        contribDiv.appendChild(contribList);
+
+        // BREAKDOWN Section
+        const breakdownDiv = document.createElement("div");
+        const breakdownTitle = document.createElement("h2");
+        breakdownTitle.textContent = "BREAKDOWN (Amount Owed)";
+        Object.assign(breakdownTitle.style, titleStyle);
+        breakdownDiv.appendChild(breakdownTitle);
+        
+        const breakdownList = document.getElementById("amountOwedList").cloneNode(true);
+        breakdownList.style.marginBottom = "30px";
+        breakdownDiv.appendChild(breakdownList);
+
+        // SETTLEMENT Section
+        const settlementDiv = document.createElement("div");
+        const settlementTitle = document.createElement("h2");
+        settlementTitle.textContent = "SETTLEMENT";
+        Object.assign(settlementTitle.style, titleStyle);
+        settlementDiv.appendChild(settlementTitle);
+        
+        const settlementResult = document.getElementById("paymentResult").cloneNode(true);
+        settlementDiv.appendChild(settlementResult);
+
+        // Append all sections to container
+        screenshotContainer.appendChild(mealDiv);
+        screenshotContainer.appendChild(contribDiv);
+        screenshotContainer.appendChild(breakdownDiv);
+        screenshotContainer.appendChild(settlementDiv);
+
+        document.body.appendChild(screenshotContainer);
+
+        // Capture the container as image
+        const canvas = await html2canvas(screenshotContainer, {
+            backgroundColor: "white",
+            scale: 2,
+            logging: false,
+            useCORS: true
+        });
+
+        // Remove the container
+        document.body.removeChild(screenshotContainer);
+
+        // Convert canvas to blob and copy to clipboard
+        canvas.toBlob(blob => {
+            navigator.clipboard.write([
+                new ClipboardItem({
+                    "image/png": blob
+                })
+            ]).then(() => {
+                showToast("✓ Image copied to clipboard!");
+            }).catch(err => {
+                showToast("Failed to copy image: " + err.message);
+            });
+        });
+    } catch (error) {
+        showToast("Error: " + error.message);
+        console.error("Capture error:", error);
+    }
+}
+// ===== CAPTURE AND COPY AS IMAGE =====
