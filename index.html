@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weekly Meal Cost App</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -12,10 +13,9 @@
 </head>
 <body>
 <!--Container -->
-<div class="mx-auto bg-grey-400">
-  <div class="min-h-screen flex flex-col">
+<div class="mx-auto bg-grey-400 min-h-screen flex flex-col">
     <!--Header Section Starts Here-->
-    <header class="bg-primary fixed top-0 left-0 w-full z-50 h-16 flex items-center justify-between px-4">
+    <header class="bg-primary fixed top-0 left-0 w-full z-50 h-16 flex items-center justify-between px-2 sm:px-4">
       <p class="text-xl font-bold text-white">Weekly Meal Cost Computation</p>
       <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
         Recipes
@@ -23,10 +23,10 @@
     </header>
     <!--/Header-->
     <!--Main-->
-   <div class="flex pt-16">
-     <main id="mainContent" class="transition-all duration-300 mr-64 p-4 overflow-auto h-[calc(100vh-4rem)]">
+   <div class="flex flex-col lg:flex-row pt-16">
+     <main id="mainContent" class="transition-all duration-300 w-full p-2 sm:p-4 overflow-auto h-[calc(100vh-4rem)]">
         <div class="flex flex-col">
-          <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+          <div class="flex flex-1 flex-col md:flex-row lg:flex-row mx-0 sm:mx-2">
             <div class="mb-2 border border-primary rounded border shadow-sm w-full">
               <div class="bg-primary px-2 py-3 border-solid flex items-center justify-between">
                 <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">
@@ -38,7 +38,7 @@
               </div>
               <div class="flex flex-wrap m-1">
                 <!-- First div -->
-                <div class="w-full md:w-1/3 px-3 mb-6">
+                <div class="w-full md:w-1/3 px-1 sm:px-3 mb-6">
                   <div class="w-full p-3 bg-white border border-primary rounded">
                     <div class="w-full max-w-lg mx-auto md:mx-0 p-3">
                       <div class="flex flex-wrap -mx-3 mb-6">
@@ -62,7 +62,7 @@
                 </div>
 
                 <!-- Second div -->
-                <div class="w-full md:w-1/3 px-3 mb-6">
+                <div class="w-full md:w-1/3 px-1 sm:px-3 mb-6">
                   <div class="w-full p-3 bg-white border border-primary rounded">
                     <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -108,7 +108,7 @@
                 </div>
 
                 <!-- Third div -->
-                <div class="w-full md:w-1/3 px-3 mb-6">
+                <div class="w-full md:w-1/3 px-1 sm:px-3 mb-6">
                   <div class="w-full p-3 bg-white border border-primary rounded">
                     <div class="flex flex-wrap mx-3 mb-6">
                       <div class="w-full px-3" id="whoWillEat">
@@ -124,8 +124,8 @@
                 </button>
               </div>
               <!--table-->
-              <div class="w-screen max-w-full overflow-x-auto p-2 sm:px-4">
-                <table id="mealTable" class="w-full border border-primary border-collapse text-sm bg-white">
+              <div class="w-full overflow-x-auto p-1 sm:p-2">
+                <table id="mealTable" class="min-w-[600px] w-full border border-primary border-collapse text-xs sm:text-sm bg-white">
                   <thead>
                     <tr>
                       <th class="border border-primary px-4 py-3 font-semibold text-gray-700">Day</th>
@@ -143,12 +143,12 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+          <div class="flex flex-1 flex-col md:flex-row lg:flex-row mx-0 sm:mx-2">
             <div class="mb-2 border border-primary rounded border shadow-sm w-full">
               <div class="bg-primary px-2 py-3 border-solid">
                   <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Settlement</p>
               </div>
-              <div class="flex flex-col md:flex-row gap-4 p-4 bg-white">
+              <div class="flex flex-col md:flex-row gap-2 sm:gap-4 p-2 sm:p-4 bg-white">
                 <!-- 1?¸âƒ£ Who Pays -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Who Pays</h3>
@@ -182,7 +182,7 @@
       </main>
       <!--/Main-->
       <!--Recipe-->
-      <aside id="sidebar" class="w-64 border-l-4 border-primary fixed top-16 right-0 h-[calc(100vh-4rem)] overflow-y-auto transition-all duration-300">
+      <aside id="sidebar" class="w-64 max-w-full border-l-4 border-primary fixed top-16 right-0 h-[calc(100vh-4rem)] overflow-y-auto transition-all duration-300 bg-white z-40">
         <!-- Sticky Header -->
         <div class="sticky top-0 z-10 bg-white shadow-sm">
           <p class="text-xl font-bold text-primary px-3 py-2 m-0">Recipes</p>
@@ -205,7 +205,7 @@
 
 <!-- DEBT MODAL -->
 <div id="debtModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6 relative max-h-[80vh]">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-2 sm:p-6 relative max-h-[80vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-bold">Add Additional Debt</h3>
       <button onclick="closeDebtModal()" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
