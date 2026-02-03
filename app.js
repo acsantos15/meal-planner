@@ -439,23 +439,36 @@ function loadWhoWillEat() {
 // ===== LOAD PAYER INPUTS =====
 function loadPayerInputs() {
     const div = document.getElementById("payerInputs");
-    div.innerHTML = "<h4>Who paid for groceries:</h4>";
+    div.innerHTML = "";
 
     people.forEach((p, i) => {
         const container = document.createElement("div");
-        container.className = "flex items-center gap-2 mb-2";
-
-        const label = document.createElement("label");
-        label.innerText = p.name;
+        container.className = "border-b border-gray-300 py-2 px-2 hover:bg-purple-50 rounded transition-colors";
 
         const input = document.createElement("input");
         input.type = "number";
         input.id = `contrib_${i}`;
-        input.placeholder = "Amount Paid";
-        input.className = "border px-2 py-1 rounded w-24";
+        input.placeholder = "Amount";
+        input.className = "border-2 border-primary rounded px-3 py-2 w-24 text-right font-semibold focus:outline-none";
 
-        container.appendChild(label);
-        container.appendChild(input);
+        const row = document.createElement("div");
+        row.className = "flex justify-between items-center";
+        
+        const label = document.createElement("span");
+        label.innerText = p.name;
+        label.className = "font-semibold text-gray-700";
+        
+        const amountDisplay = document.createElement("div");
+        amountDisplay.className = "flex items-center gap-1";
+        const currencyLabel = document.createElement("span");
+        currencyLabel.innerHTML = "₱";
+        currencyLabel.className = "text-gray-500 font-semibold";
+        amountDisplay.appendChild(currencyLabel);
+        amountDisplay.appendChild(input);
+
+        row.appendChild(label);
+        row.appendChild(amountDisplay);
+        container.appendChild(row);
         div.appendChild(container);
     });
 }
@@ -723,12 +736,27 @@ function computePayment() {
 
     const settlementDiv = document.getElementById("paymentResult");
     settlementDiv.innerHTML = settlements.length === 0
-        ? "<div class='text-center text-green-600 font-bold py-4'>✓ All settled, no one owes anything!</div>"
-        : settlements.map((s, idx) => `
-            <div class='border-b border-gray-300 py-3 px-2 hover:bg-blue-50 rounded transition-colors'>
-                <div class='text-lg font-semibold text-gray-800'>${s}</div>
-            </div>
-        `).join("");
+        ? "<div class='text-center text-green-600 font-bold py-6 text-lg'>✓ All settled, no one owes anything!</div>"
+        : settlements.map((s, idx) => {
+            // Parse the settlement string to extract names and amount
+            const match = s.match(/(.+?) pays (.+?): (.+)/);
+            if (match) {
+                const [_, payer, receiver, amount] = match;
+                return `
+                    <div class='border-b border-gray-300 py-2 px-2 hover:bg-blue-50 rounded transition-colors'>
+                        <div class='flex justify-between items-center'>
+                            <div class='flex items-center gap-2 flex-1'>
+                                <span class='font-semibold text-gray-700'>${payer.trim()}</span>
+                                <span class='text-blue-500 font-bold'>→</span>
+                                <span class='font-semibold text-gray-700'>${receiver.trim()}</span>
+                            </div>
+                            <span class='font-bold text-blue-600'>₱${amount.trim()}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            return `<div class='border-b border-gray-300 py-2 px-2 hover:bg-blue-50 rounded transition-colors'>${s}</div>`;
+        }).join("");
 }
 
 // ===== PAYMENT COMPUTATION =====
