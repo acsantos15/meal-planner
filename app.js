@@ -568,19 +568,46 @@ function addMeal() {
     }
 
     // Create cells with bullet points for ingredients and eaters
-    const ingredientsList = ingredients.map(i => `<li>${i.name}: \u20B1${i.price.toFixed(2)}</li>`).join("");
-    const eatersList = eaters.map(e => `<li>${e.name} (${e.meals} meal${e.meals > 1 ? 's' : ''})</li>`).join("");
+    const ingredientsList = ingredients.map(i => `<li class='text-sm text-gray-700'>${i.name}: <strong>₱${i.price.toFixed(2)}</strong></li>`).join("");
+    const eatersList = eaters.map(e => `<li class='text-sm text-gray-700'>${e.name} <span class='text-blue-600 font-semibold'>(${e.meals} meal${e.meals > 1 ? 's' : ''})</span></li>`).join("");
 
-    createCell(row, 0, day);
-    createCell(row, 1, name);
-    createCell(row, 2, `<ul>${ingredientsList}</ul>`);
-    createCell(row, 3, total.toFixed(2));
-    createCell(row, 4, perMealPortion.toFixed(2));
-    createCell(row, 5, `<ul>${eatersList}</ul>`);
-    createCell(row, 6, `
-        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-center mr-2">Edit</button>
-        <button class="bg-del bg-del-hover text-white px-3 py-1 rounded text-center">Delete</button>
-    `);
+    // Day cell
+    const dayCell = row.cells[0] || row.insertCell(0);
+    dayCell.className = "border border-primary px-4 py-2 font-semibold text-gray-800 bg-blue-50";
+    dayCell.innerHTML = day;
+
+    // Meal name cell
+    const nameCell = row.cells[1] || row.insertCell(1);
+    nameCell.className = "border border-primary px-4 py-2 font-bold text-lg text-gray-800";
+    nameCell.innerHTML = name;
+
+    // Ingredients cell
+    const ingredientsCell = row.cells[2] || row.insertCell(2);
+    ingredientsCell.className = "border border-primary px-4 py-2";
+    ingredientsCell.innerHTML = `<ul class='list-disc list-inside'>${ingredientsList}</ul>`;
+
+    // Total price cell
+    const totalCell = row.cells[3] || row.insertCell(3);
+    totalCell.className = "border border-primary px-4 py-2 text-center font-bold text-green-600 text-lg";
+    totalCell.innerHTML = `₱${total.toFixed(2)}`;
+
+    // Per meal portion cell
+    const perMealCell = row.cells[4] || row.insertCell(4);
+    perMealCell.className = "border border-primary px-4 py-2 text-center font-semibold text-blue-600";
+    perMealCell.innerHTML = `₱${perMealPortion.toFixed(2)}`;
+
+    // Eaters cell
+    const eatersCell = row.cells[5] || row.insertCell(5);
+    eatersCell.className = "border border-primary px-4 py-2";
+    eatersCell.innerHTML = `<ul class='list-disc list-inside'>${eatersList}</ul>`;
+
+    // Action cell
+    const actionCell = row.cells[6] || row.insertCell(6);
+    actionCell.className = "px-4 py-2 flex flex-wrap items-center justify-center gap-2";
+    actionCell.innerHTML = `
+        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold transition-colors">Edit</button>
+        <button class="bg-del bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">Delete</button>
+    `;
 
     // Edit functionality
     const editBtn = row.cells[6].querySelector(".bg-edit");
