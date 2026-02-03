@@ -89,8 +89,16 @@ function addDebtRow() {
         }
     }
 
-    paidBySelect.onchange = () =>
+    paidBySelect.onchange = () => {
         validatePeopleChange(paidBySelect, requestedBySelect);
+        // Automatically update the "Who paid for groceries" section when a person is selected
+        const payerIndex = paidBySelect.value;
+        const paidAmountInput = document.getElementById(`contrib_${payerIndex}`);
+        if (paidAmountInput) {
+            const amount = Number(amountInput.value) || 0;
+            paidAmountInput.value = (Number(paidAmountInput.value) || 0) + amount;
+        }
+    };
 
     requestedBySelect.onchange = () =>
         validatePeopleChange(requestedBySelect, paidBySelect);
@@ -113,7 +121,6 @@ function addDebtRow() {
 
     debtRows.appendChild(row);
 }
-
 // ===== Add Debt Modal Row =====
 
 
