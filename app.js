@@ -395,6 +395,43 @@ function loadWhoWillEat() {
 
         div.appendChild(container);
     });
+
+    // Add Check All buttons at the bottom
+    const checkAllContainer = document.createElement("div");
+    checkAllContainer.className = "flex items-center gap-2 mt-4 pt-3 border-t border-primary";
+
+    const checkAllLunchBtn = document.createElement("button");
+    checkAllLunchBtn.textContent = "Check All Lunch";
+    checkAllLunchBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
+    checkAllLunchBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_lunch_${i}`).checked = true;
+        });
+    };
+
+    const checkAllDinnerBtn = document.createElement("button");
+    checkAllDinnerBtn.textContent = "Check All Dinner";
+    checkAllDinnerBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
+    checkAllDinnerBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_dinner_${i}`).checked = true;
+        });
+    };
+
+    const uncheckAllBtn = document.createElement("button");
+    uncheckAllBtn.textContent = "Uncheck All";
+    uncheckAllBtn.className = "bg-gray-400 text-white px-3 py-1 rounded text-sm hover:bg-gray-500";
+    uncheckAllBtn.onclick = () => {
+        people.forEach((p, i) => {
+            document.getElementById(`eat_lunch_${i}`).checked = false;
+            document.getElementById(`eat_dinner_${i}`).checked = false;
+        });
+    };
+
+    checkAllContainer.appendChild(checkAllLunchBtn);
+    checkAllContainer.appendChild(checkAllDinnerBtn);
+    checkAllContainer.appendChild(uncheckAllBtn);
+    div.appendChild(checkAllContainer);
 }
 // ===== WHO WILL EAT =====
 
@@ -656,22 +693,42 @@ function computePayment() {
 
     // Display
     const contributionsDiv = document.getElementById("contributionsList");
-    contributionsDiv.innerHTML = contributions.map(c => `<div>${c.name} paid: ${c.paid.toFixed(2)}</div>`).join("");
+    contributionsDiv.innerHTML = contributions.map((c, idx) => `
+        <div class='border-b border-gray-300 py-2 px-2 hover:bg-green-50 rounded transition-colors'>
+            <div class='flex justify-between items-center'>
+                <span class='font-semibold text-gray-700'>${c.name}</span>
+                <span class='text-lg font-bold text-green-600'>₱${c.paid.toFixed(2)}</span>
+            </div>
+        </div>
+    `).join("");
 
     const owedDiv = document.getElementById("amountOwedList");
-    owedDiv.innerHTML = personOwes.map(po => {
-        const debtHtml = po.debtDetails.map(d => `${d.item} (Debt): ${d.cost.toFixed(2)}`).join(", ");
+    owedDiv.innerHTML = personOwes.map((po, idx) => {
+        const debtHtml = po.debtDetails.length > 0 
+            ? po.debtDetails.map(d => `<div class='text-sm text-gray-600 mt-1'>• ${d.item}: ₱${d.cost.toFixed(2)}</div>`).join("")
+            : "<div class='text-sm text-gray-500 mt-1'>• None</div>";
 
-        return `<div>
-            <strong>${po.name}</strong>: Total Owe: ${po.totalOwe.toFixed(2)}<br>
-            Debts: ${debtHtml}
-        </div>`;
+        return `
+            <div class='border-b border-gray-300 py-3 px-2 hover:bg-yellow-50 rounded transition-colors'>
+                <div class='flex justify-between items-start mb-2'>
+                    <span class='font-semibold text-gray-700'>${po.name}</span>
+                    <span class='text-lg font-bold text-orange-600'>₱${po.totalOwe.toFixed(2)}</span>
+                </div>
+                <div class='ml-2'>
+                    ${debtHtml}
+                </div>
+            </div>
+        `;
     }).join("");
 
     const settlementDiv = document.getElementById("paymentResult");
     settlementDiv.innerHTML = settlements.length === 0
-        ? "<div>All settled, no one owes anything!</div>"
-        : settlements.map(s => `<div>${s}</div>`).join("");
+        ? "<div class='text-center text-green-600 font-bold py-4'>✓ All settled, no one owes anything!</div>"
+        : settlements.map((s, idx) => `
+            <div class='border-b border-gray-300 py-3 px-2 hover:bg-blue-50 rounded transition-colors'>
+                <div class='text-lg font-semibold text-gray-800'>${s}</div>
+            </div>
+        `).join("");
 }
 
 // ===== PAYMENT COMPUTATION =====
