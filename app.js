@@ -1,6 +1,7 @@
 // ===== GLOBAL DATA =====
 let people = [];
 let meals = [];
+let editMealIndex = null; // Track which meal is being edited
 let additionalDebts = [];
 
 // ===== Open Close Modal (Debt) =====
@@ -425,6 +426,7 @@ function loadPayerInputs() {
 
 // ===== ADD MEAL =====
 function addMeal() {
+    const isEdit = editMealIndex !== null;
     const name = document.getElementById("mealName").value;
     const day = document.getElementById("mealDay").value;
     const table = document.getElementById("mealTable");
@@ -450,7 +452,14 @@ function addMeal() {
     }
     // --- Validation END ---
 
-    const row = table.insertRow(-1);
+    // If editing, update the existing meal, else add new row
+    let row;
+    if (isEdit) {
+        // Find the row in the table to update
+        row = table.rows[editMealIndex + 1]; // +1 for header row
+    } else {
+        row = table.insertRow(-1);
+    }
 
     // Collect ingredients
     const inputs = document.querySelectorAll("#ingredients .ingredientRow");
@@ -475,11 +484,17 @@ function addMeal() {
     const totalMeals = eaters.reduce((sum, e) => sum + e.meals, 0);
     const perMealPortion = totalMeals > 0 ? total / totalMeals : 0;
 
-    meals.push({ day, name, total, ingredients, eaters, perMealPortion });
+    const mealData = { day, name, total, ingredients, eaters, perMealPortion };
+    if (isEdit) {
+        meals[editMealIndex] = mealData;
+    } else {
+        meals.push(mealData);
+    }
 
     // Helper to create table cells
     function createCell(row, index, content, extraClasses = "") {
-        const cell = row.insertCell(index);
+        let cell = row.cells[index];
+        if (!cell) cell = row.insertCell(index);
         cell.className = `border border-primary px-4 py-2 ${extraClasses}`;
         cell.innerHTML = content;
         return cell;
@@ -494,23 +509,68 @@ function addMeal() {
     createCell(row, 2, `<ul>${ingredientsList}</ul>`);
     createCell(row, 3, total.toFixed(2));
     createCell(row, 4, perMealPortion.toFixed(2));
-
-    // Breakdown column
     createCell(row, 5, `<ul>${eatersList}</ul>`);
+    createCell(row, 6, `
+        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-center mr-2">Edit</button>
+        <button class="bg-del bg-del-hover text-white px-3 py-1 rounded text-center">Delete</button>
+    `);
 
-    createCell(row, 6, `<button class="bg-del bg-del-hover text-white px-3 py-1 rounded text-center">Delete</button>`);
-
-    // Delete functionality
-    const deleteBtn = row.cells[6].querySelector("button");
-    deleteBtn.onclick = () => {
-        meals = meals.filter(m => m.name !== name || m.day !== day); 
-        table.deleteRow(row.rowIndex);
+    // Edit functionality
+    const editBtn = row.cells[6].querySelector(".bg-edit");
+    editBtn.onclick = () => {
+        // Set form values
+        document.getElementById("mealName").value = name;
+        document.getElementById("mealDay").value = day;
+        // Populate ingredients
+        const ingredientsDiv = document.getElementById("ingredients");
+        ingredientsDiv.innerHTML = "";
+        ingredients.forEach(ing => {
+            addIngredientRow();
+            const lastRow = ingredientsDiv.querySelectorAll(".ingredientRow");
+            const ingRow = lastRow[lastRow.length - 1];
+            ingRow.querySelector(".ingName").value = ing.name;
+            ingRow.querySelector(".ingPrice").value = ing.price;
+        });
+        // Populate eaters
+        people.forEach((p, i) => {
+            document.getElementById(`eat_lunch_${i}`).checked = false;
+            document.getElementById(`eat_dinner_${i}`).checked = false;
+        });
+        eaters.forEach(e => {
+            const idx = people.findIndex(p => p.name === e.name);
+            if (idx !== -1) {
+                if (e.meals >= 1) document.getElementById(`eat_lunch_${idx}`).checked = true;
+                if (e.meals >= 2) document.getElementById(`eat_dinner_${idx}`).checked = true;
+            }
+        });
+        // Switch button to Update
+        const btn = document.querySelector('button[onclick="addMeal()"]');
+        btn.textContent = "Update Meal";
+        editMealIndex = row.rowIndex - 1; // -1 for header
     };
 
-    // Clear inputs
+    // Delete functionality
+    const deleteBtn = row.cells[6].querySelector(".bg-del");
+    deleteBtn.onclick = () => {
+        meals.splice(row.rowIndex - 1, 1);
+        table.deleteRow(row.rowIndex);
+        // If editing this row, reset form
+        if (editMealIndex === row.rowIndex - 1) {
+            clearMealForm();
+        }
+    };
+
+    // Clear form and reset button if not editing, or after update
+    clearMealForm();
+}
+
+function clearMealForm() {
     document.getElementById("mealName").value = "";
     document.getElementById("ingredients").innerHTML = "";
     loadWhoWillEat();
+    const btn = document.querySelector('button[onclick="addMeal()"]');
+    if (btn) btn.textContent = "Add Meal";
+    editMealIndex = null;
 }
 // ===== ADD MEAL =====
 
