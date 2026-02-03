@@ -6,6 +6,21 @@
   background-color: #9678B6;
 }
 
+.bg-del {
+  background-color: #7442C8;
+}
+
+.bg-del-hover {
+  background-color: #5B3256; /* color on hover */
+  color: white;
+}
+
+.bg-del-hover:hover {
+  background-color: #7442C8;
+  transition: background-color 0.2s; /* smooth hover */
+}
+
+
 .text-primary {
   color: #9678B6;
 }
@@ -20,7 +35,7 @@
 }
 
 .bg-hover:hover {
-  background-color: #7B679A; /* color on hover */
+  background-color: #7442C8; /* color on hover */
   color: white;
 }
 
@@ -30,7 +45,7 @@
 }
 
 .bg-hover-nav:hover {
-  background-color: #9678B6; /* color on hover */
+  background-color: #7442C8; /* color on hover */
   color: white;
 }
 
