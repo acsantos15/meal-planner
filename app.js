@@ -1,121 +1,159 @@
 // ===== GLOBAL DATA =====
 let people = [];
 let meals = [];
-let additionalDebts = []; // { item, amount, boughtBy, requestedBy }
+let additionalDebts = [];
 
-// Open/close modal
+// ===== Open Close Modal (Debt) =====
 function openDebtModal() {
     document.getElementById("debtModal").classList.remove("hidden");
     if (additionalDebts.length === 0) addDebtRow(); // add first row by default
 }
 
 function closeDebtModal() {
+    const debtRows = document.getElementById("debtRows");
+    debtRows.innerHTML = "";
     document.getElementById("debtModal").classList.add("hidden");
 }
+// ===== Open Close Modal (Debt) =====
 
-// Add a new debt row
+// ===== Add Debt Modal Row =====
 function addDebtRow() {
     const debtRows = document.getElementById("debtRows");
 
-    const rowIndex = debtRows.children.length;
     const row = document.createElement("div");
-    row.className = "flex gap-2 items-center";
+    row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b pb-3"; // Adjust grid
 
-    // Item name
+    // Helper to create floating label input/select
+    function createField({ label, element, colSpan }) {
+        const wrapper = document.createElement("div");
+        wrapper.className = `relative md:col-span-${colSpan}`;
+
+        const lbl = document.createElement("label");
+        lbl.textContent = label;
+        lbl.className = "text-primary text-sm font-semibold absolute -top-2 left-2 px-1 bg-white";
+
+        element.className += " border-2 border-primary rounded-[5px] px-3 py-2 w-full";
+
+        wrapper.append(lbl, element);
+        return wrapper;
+    }
+
+    // Item Name
     const itemInput = document.createElement("input");
     itemInput.type = "text";
-    itemInput.placeholder = "Item Name";
-    itemInput.className = "border px-2 py-1 rounded w-2/5";
+    itemInput.placeholder = "Item name";
 
     // Amount
     const amountInput = document.createElement("input");
     amountInput.type = "number";
-    amountInput.placeholder = "Amount";
-    amountInput.className = "border px-2 py-1 rounded w-1/5";
+    amountInput.min = "0";
+    amountInput.placeholder = "0.00";
 
-    // Bought by
-    const boughtBySelect = document.createElement("select");
-    boughtBySelect.className = "border px-2 py-1 rounded w-1/5";
-    people.forEach((p, i) => {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.text = p.name;
-        boughtBySelect.appendChild(opt);
-    });
+    // Paid By
+    const paidBySelect = document.createElement("select");
+    const paidPlaceholder = document.createElement("option");
+    paidPlaceholder.value = "";
+    paidPlaceholder.text = "Select payer";
+    paidPlaceholder.disabled = true;
+    paidPlaceholder.selected = true;
+    paidBySelect.appendChild(paidPlaceholder);
 
-    // Requested by
+    // Requested By
     const requestedBySelect = document.createElement("select");
-    requestedBySelect.className = "border px-2 py-1 rounded w-1/5";
+    const reqPlaceholder = document.createElement("option");
+    reqPlaceholder.value = "";
+    reqPlaceholder.text = "Select requester";
+    reqPlaceholder.disabled = true;
+    reqPlaceholder.selected = true;
+    requestedBySelect.appendChild(reqPlaceholder);
+
+    // Add people options
     people.forEach((p, i) => {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.text = p.name;
-        requestedBySelect.appendChild(opt);
+        const opt1 = document.createElement("option");
+        opt1.value = i;
+        opt1.text = p.name;
+
+        const opt2 = opt1.cloneNode(true);
+
+        paidBySelect.appendChild(opt1);
+        requestedBySelect.appendChild(opt2);
     });
 
-    // Delete button
+    // ? Validation: cannot be same person
+    function validatePeopleChange(changedSelect, otherSelect) {
+        if (changedSelect.value === otherSelect.value && changedSelect.value !== "") {
+            const fallback = [...otherSelect.options].find(
+                (o) => o.value !== changedSelect.value && o.value !== ""
+            );
+            if (fallback) otherSelect.value = fallback.value;
+        }
+    }
+
+    paidBySelect.onchange = () =>
+        validatePeopleChange(paidBySelect, requestedBySelect);
+
+    requestedBySelect.onchange = () =>
+        validatePeopleChange(requestedBySelect, paidBySelect);
+
+    // Delete button (Placed beside other fields)
     const delBtn = document.createElement("button");
-    delBtn.textContent = "🗑️";
-    delBtn.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
+    delBtn.textContent = "Del"; // Changed to "Del"
+    delBtn.className =
+        "bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 md:col-span-1 h-fit"; // Keep it at the end of the row
     delBtn.onclick = () => debtRows.removeChild(row);
 
-    row.append(itemInput, amountInput, boughtBySelect, requestedBySelect, delBtn);
+    // Append all fields and the delete button with adjusted column spans
+    row.append(
+        createField({ label: "Item", element: itemInput, colSpan: 3 }), // Reduced colSpan for item input
+        createField({ label: "Amount", element: amountInput, colSpan: 2 }), // Reduced colSpan for amount input
+        createField({ label: "Paid By", element: paidBySelect, colSpan: 3 }), // Kept colSpan for select fields
+        createField({ label: "Requested By", element: requestedBySelect, colSpan: 3 }), // Kept colSpan for select fields
+        delBtn // Append delete button at the end of the row
+    );
+
     debtRows.appendChild(row);
 }
 
-// Add a debt row to the meal table
+// ===== Add Debt Modal Row =====
+
+
+// ===== Add Debt Table Row =====
 function addDebtRowToTable(debt) {
     const table = document.getElementById("mealTable");
     const row = table.insertRow(-1);
 
-    row.insertCell(0).innerText = "-"; // Day
-    row.insertCell(1).innerText = debt.item; // Item name
-    row.insertCell(2).innerText = "Additional Debt"; // Notes / Ingredients
-    row.insertCell(3).innerText = debt.amount.toFixed(2); // Total Price
-    row.insertCell(4).innerText = debt.amount.toFixed(2); // Per Person (for simplicity)
-    row.insertCell(5).innerText = `${debt.requestedBy} → ${debt.boughtBy}`; // Breakdown
-    const actionCell = row.insertCell(6);
-    actionCell.innerHTML = `<button class="bg-red-500 text-white px-3 py-1 rounded">Delete</button>`;
+    // Style debt row
+    row.className = "bg-primary text-white";
+    row.insertCell(0).innerText = "";
+    row.insertCell(1).innerHTML = `<strong>${debt.item}</strong>`;
+    row.insertCell(2).innerHTML = `<span>Additional Debt</span>`;
+    row.insertCell(3).innerHTML = `Price: <strong>${debt.amount.toFixed(2)}</strong>`;
+    row.insertCell(4).innerHTML = `Owed: <strong>${debt.amount.toFixed(2)}</strong>`;
+    row.insertCell(5).innerHTML = `
+        Requested by: <strong>${debt.requestedBy}</strong><br>
+        Paid by: <strong>${debt.boughtBy}</strong>
+    `;
 
-    // Delete functionality
+    const actionCell = row.insertCell(6);
+    actionCell.innerHTML = `
+        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+            Delete
+        </button>
+    `;
+
     actionCell.querySelector("button").onclick = () => {
         additionalDebts = additionalDebts.filter(d => d !== debt);
         table.deleteRow(row.rowIndex);
     };
 }
-
-function updateDebtSummaryRow() {
-    const table = document.getElementById("mealTable");
-
-    // Remove old debt row
-    const oldRow = Array.from(table.rows).find(r => r.dataset.type === "debtSummary");
-    if (oldRow) table.deleteRow(oldRow.rowIndex);
-
-    if (additionalDebts.length === 0) return;
-
-    const row = table.insertRow(-1);
-    row.dataset.type = "debtSummary";
-
-    row.insertCell(0).innerText = "-";
-    row.insertCell(1).innerText = "Additional Debts";
-    row.insertCell(2).innerHTML = additionalDebts.map(d => `${d.item} (${d.requestedBy}→${d.boughtBy}): ${d.amount.toFixed(2)}`).join(", ");
-    const totalDebt = additionalDebts.reduce((sum, d) => sum + d.amount, 0);
-    row.insertCell(3).innerText = totalDebt.toFixed(2);
-    row.insertCell(4).innerText = totalDebt.toFixed(2);
-    row.insertCell(5).innerText = "Breakdown";
-    const actionCell = row.insertCell(6);
-    actionCell.innerHTML = `<button class="bg-red-500 text-white px-3 py-1 rounded">Delete All Debts</button>`;
-    actionCell.querySelector("button").onclick = () => {
-        additionalDebts = [];
-        updateDebtSummaryRow();
-    };
-}
+// ===== Add Debt Table Row =====
 
 
-// Save debts
+// ===== Save Debts =====
 function saveDebts() {
     additionalDebts = [];
     const rows = document.getElementById("debtRows").children;
+
     for (let row of rows) {
         const inputs = row.querySelectorAll("input, select");
         const item = inputs[0].value.trim();
@@ -124,15 +162,15 @@ function saveDebts() {
         const requestedBy = people[Number(inputs[3].value)].name;
 
         if (item && amount > 0) {
-            additionalDebts.push({ item, amount, boughtBy, requestedBy });
+            const debt = { item, amount, boughtBy, requestedBy };
+            additionalDebts.push(debt);
+            addDebtRowToTable(debt);
         }
     }
+
     closeDebtModal();
-
-    // <-- Add this
-    updateDebtSummaryRow();
 }
-
+// ===== Save Debts =====
 
 
 // ===== PEOPLE =====
@@ -166,7 +204,8 @@ function setPeople() {
 
         // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "🗑️";
+        delBtn.textContent = "Del";
+        delBtn.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
         delBtn.addEventListener("click", () => {
             people.splice(i, 1); // remove from array
             setPeopleFromArray(); // re-render inputs
@@ -182,7 +221,6 @@ function setPeople() {
     loadWhoWillEat();
     loadPayerInputs();
 }
-
 // Helper to re-render people array (after delete)
 function setPeopleFromArray() {
     const div = document.getElementById("peopleInputs");
@@ -206,7 +244,8 @@ function setPeopleFromArray() {
 
         // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "🗑️";
+        delBtn.textContent = "Del";
+        delBtn.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
         delBtn.addEventListener("click", () => {
             people.splice(i, 1); // remove from array
             setPeopleFromArray(); // re-render inputs
@@ -232,12 +271,14 @@ function updatePeople() {
     });
 }
 
+// ===== PEOPLE ====
+
+// ===== RECIPE =====
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.getElementById("addIngredientBtn");
   if (addBtn) addBtn.style.display = "none";
 });
 
-// ===== LOAD RECIPE OR START BLANK =====
 function loadRecipe() {
     const mealName = document.getElementById("mealName").value
     const div = document.getElementById("ingredients");
@@ -279,15 +320,17 @@ function addIngredientRow(name = "") {
     priceInput.className = "ingPrice border border-primary px-2 py-1 rounded w-1/5 text-lg";
 
     const delBtn = document.createElement("button");
-    delBtn.textContent = "🗑️";
+    delBtn.textContent = "Del";
+    delBtn.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
     delBtn.onclick = () => div.removeChild(row);
 
     row.append("Name: ", nameInput, " Price: ", priceInput, delBtn);
     div.appendChild(row);
 }
 
+// ===== RECIPE =====
 
-// Who will eat
+// ===== WHO WILL EAT =====
 function loadWhoWillEat() {
     const div = document.getElementById("whoWillEat");
     div.innerHTML = "<h4 class='text-primary font-bold mb-2'>Who will eat this meal:</h4>";
@@ -345,9 +388,9 @@ function loadWhoWillEat() {
         div.appendChild(container);
     });
 }
+// ===== WHO WILL EAT =====
 
 
-// Generate contribution inputs
 // ===== LOAD PAYER INPUTS =====
 function loadPayerInputs() {
     const div = document.getElementById("payerInputs");
@@ -371,6 +414,7 @@ function loadPayerInputs() {
         div.appendChild(container);
     });
 }
+// ===== LOAD PAYER INPUTS =====
 
 // ===== ADD MEAL =====
 function addMeal() {
@@ -437,26 +481,6 @@ function addMeal() {
     loadWhoWillEat();
 }
 
-// Add additional debt to table
-function addDebtRowToTable(debt) {
-    const table = document.getElementById("mealTable");
-    const row = table.insertRow(-1);
-
-    row.insertCell(0).innerText = "-"; // Day
-    row.insertCell(1).innerText = debt.item; // Item Name
-    row.insertCell(2).innerText = "Additional Debt"; // Notes
-    row.insertCell(3).innerText = debt.amount.toFixed(2); // Total
-    row.insertCell(4).innerText = debt.amount.toFixed(2); // Per Person (full amount to requester)
-    row.insertCell(5).innerText = `${debt.requestedBy} → ${debt.boughtBy}`; // Breakdown
-    const actionCell = row.insertCell(6);
-    actionCell.innerHTML = `<button class="bg-red-500 text-white px-3 py-1 rounded">Delete</button>`;
-    actionCell.querySelector("button").onclick = () => {
-        additionalDebts = additionalDebts.filter(d => d !== debt);
-        table.deleteRow(row.rowIndex);
-    };
-}
-
-
 function showToast(message) {
     const toast = document.getElementById("validationToast");
     const msg = document.getElementById("toastMessage");
@@ -472,23 +496,22 @@ function showToast(message) {
 function hideToast() {
     document.getElementById("validationToast").classList.add("hidden");
 }
+// ===== ADD MEAL =====
 
 
-// ===== COMPUTE PAYMENT WITH VALIDATION =====
+// ===== PAYMENT COMPUTATION =====
 function computePayment() {
     if (meals.length === 0) {
         showToast("No meals added yet!");
         return;
     }
 
-    // 1️⃣ Collect contributions
     const contributions = people.map((p, i) => ({
         name: p.name,
         paid: Number(document.getElementById(`contrib_${i}`)?.value || 0)
     }));
 
-    // 2️⃣ Compute total meals eaten
-    let totalMealsEaten = meals.reduce((sum, meal) => {
+    const totalMealsEaten = meals.reduce((sum, meal) => {
         return sum + meal.eaters.reduce((s, e) => s + e.meals, 0);
     }, 0);
 
@@ -497,105 +520,104 @@ function computePayment() {
         return;
     }
 
-    // 3️⃣ Compute total cost
-    let totalCost = meals.reduce((sum, meal) => sum + meal.total, 0);
+    const totalMealCost = meals.reduce((sum, meal) => sum + meal.total, 0);
+    const totalDebt = additionalDebts.reduce((sum, d) => sum + d.amount, 0);
 
-    // Add all additional debts
-    const totalDebt = additionalDebts.reduce((sum, debt) => sum + debt.amount, 0);
-    totalCost += totalDebt;
-
-    // Validation
     const totalPaid = contributions.reduce((sum, c) => sum + c.paid, 0);
-    if (totalPaid.toFixed(2) != totalCost.toFixed(2)) {
-        showToast(`⚠️ Total contributions (${totalPaid.toFixed(2)}) do not match total meal cost (${totalCost.toFixed(2)}).`);
+    if (totalPaid.toFixed(2) != (totalMealCost + totalDebt).toFixed(2)) {
+        showToast(`Total contributions (${totalPaid.toFixed(2)}) do not match total cost (${(totalMealCost + totalDebt).toFixed(2)}).`);
         return;
     }
 
-    // 4️⃣ Per meal cost
-    const perMealCost = totalCost / totalMealsEaten;
+    const perMealCost = totalMealCost / totalMealsEaten;
 
-    // 5️⃣ Amount owed by each person
+    // Calculate total owed per person (meals + debts requested by them) with breakdown
     const personOwes = people.map(p => {
-        // Meals eaten
-        const mealsCount = meals.reduce((sum, meal) => {
-            const eater = meal.eaters.find(e => e.name === p.name);
-            return sum + (eater ? eater.meals : 0);
-        }, 0);
+        const mealDetails = [];
+        let mealTotal = 0;
 
-        // Total meal cost per person
-        const totalMealsEaten = meals.reduce((sum, meal) => sum + meal.eaters.reduce((s, e) => s + e.meals, 0), 0);
-        const totalMealCost = totalMealsEaten > 0 ? (meals.reduce((sum, meal) => sum + meal.total, 0) / totalMealsEaten) * mealsCount : 0;
+        // Meals eaten by this person
+        meals.forEach(meal => {
+            const eater = meal.eaters.find(e => e.name === p.name);
+            if (eater) {
+                const cost = eater.meals * meal.perMealPortion;
+                mealDetails.push({ type: "Meal", item: meal.name, meals: eater.meals, cost });
+                mealTotal += cost;
+            }
+        });
 
         // Debts requested by this person
-        const totalDebtOwe = additionalDebts
+        const debtDetails = additionalDebts
             .filter(d => d.requestedBy === p.name)
-            .reduce((sum, d) => sum + d.amount, 0);
+            .map(d => ({ type: "Debt", item: d.item, cost: d.amount }));
+
+        const debtTotal = debtDetails.reduce((sum, d) => sum + d.cost, 0);
+
+        const breakdown = [...mealDetails, ...debtDetails];
 
         return {
             name: p.name,
-            meals: mealsCount,
-            mealCost: totalMealCost,
-            debtCost: totalDebtOwe,
-            owe: totalMealCost + totalDebtOwe
+            totalOwe: mealTotal + debtTotal,
+            breakdown
         };
     });
 
 
-    // 6️⃣ Balances
+    // Calculate balances
     const balances = people.map(p => {
-        const owes = personOwes.find(po => po.name === p.name).owe;
+        const owed = personOwes.find(po => po.name === p.name).totalOwe;
         const paid = contributions.find(c => c.name === p.name).paid;
-        return { name: p.name, balance: paid - owes };
+        return { name: p.name, balance: paid - owed };
     });
 
-    // 7️⃣ Settlement
     let creditors = balances.filter(b => b.balance > 0).sort((a, b) => b.balance - a.balance);
     let debtors = balances.filter(b => b.balance < 0).sort((a, b) => a.balance - b.balance);
-    let settlements = [];
+
+    const settlements = [];
     debtors.forEach(debtor => {
         let remaining = -debtor.balance;
         for (let i = 0; i < creditors.length; i++) {
             if (remaining <= 0) break;
-            let creditor = creditors[i];
+            const creditor = creditors[i];
             if (creditor.balance <= 0) continue;
-            let payAmount = Math.min(remaining, creditor.balance);
+            const payAmount = Math.min(remaining, creditor.balance);
             settlements.push(`${debtor.name} pays ${creditor.name}: ${payAmount.toFixed(2)}`);
             remaining -= payAmount;
             creditor.balance -= payAmount;
         }
     });
 
-    // 8️⃣ Populate sections
+    // Display
     const contributionsDiv = document.getElementById("contributionsList");
-    contributionsDiv.innerHTML = "";
-    contributions.forEach(c => {
-        contributionsDiv.innerHTML += `<div>${c.name} paid: ${c.paid.toFixed(2)}</div>`;
-    });
+    contributionsDiv.innerHTML = contributions.map(c => `<div>${c.name} paid: ${c.paid.toFixed(2)}</div>`).join("");
 
     const owedDiv = document.getElementById("amountOwedList");
-    owedDiv.innerHTML = "";
-    personOwes.forEach(po => {
-        owedDiv.innerHTML += `<div>
-            ${po.name} (${po.meals} meal${po.meals > 1 ? "s" : ""}): 
-            Meal: ${po.mealCost.toFixed(2)}, 
-            Debt: ${po.debtCost.toFixed(2)}, 
-            <strong>Total: ${po.owe.toFixed(2)}</strong>
+    owedDiv.innerHTML = personOwes.map(po => {
+        const breakdownHtml = po.breakdown.map(b => {
+            if (b.type === "Meal") {
+                return `${b.item} (${b.meals} meal${b.meals>1?'s':''}): ${b.cost.toFixed(2)}`;
+            } else {
+                return `${b.item} (Debt): ${b.cost.toFixed(2)}`;
+            }
+        }).join(", ");
+
+        return `<div>
+            <strong>${po.name}</strong>: Total Owe: ${po.totalOwe.toFixed(2)}<br>
+            Breakdown: ${breakdownHtml}
         </div>`;
-    });
+    }).join("");
 
 
     const settlementDiv = document.getElementById("paymentResult");
-    settlementDiv.innerHTML = "";
-    if (settlements.length === 0) {
-        settlementDiv.innerHTML = "<div>All settled, no one owes anything!</div>";
-    } else {
-        settlements.forEach(s => settlementDiv.innerHTML += `<div>${s}</div>`);
-    }
+    settlementDiv.innerHTML = settlements.length === 0
+        ? "<div>All settled, no one owes anything!</div>"
+        : settlements.map(s => `<div>${s}</div>`).join("");
 }
+// ===== PAYMENT COMPUTATION =====
 
 
 
-// Initialize default people on load
+// ===== INITIALIZATION =====
 document.addEventListener("DOMContentLoaded", () => {
     setPeople();
     loadPayerInputs();

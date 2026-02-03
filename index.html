@@ -17,12 +17,6 @@
     <!--Header Section Starts Here-->
     <header class="bg-primary fixed top-0 left-0 w-full z-50 h-16 flex items-center justify-between px-4">
       <p class="text-xl font-bold text-white">Weekly Meal Cost Computation</p>
-      <button
-  class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600"
-  onclick="openDebtModal()"
->
-  Add Additional Debt
-</button>
       <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
         Recipes
       </button>
@@ -34,8 +28,13 @@
         <div class="flex flex-col">
           <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
             <div class="mb-2 border border-primary rounded border shadow-sm w-full">
-              <div class="bg-primary px-2 py-3 border-solid">
-                  <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Meal</p>
+              <div class="bg-primary px-2 py-3 border-solid flex items-center justify-between">
+                <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">
+                  Meal
+                </p>
+                <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 text-xs px-4 rounded" onclick="openDebtModal()">
+                  Add Additional Debt
+                </button>
               </div>
               <div class="flex flex-wrap m-1">
                 <!-- First div -->
@@ -150,7 +149,7 @@
                   <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Setlement</p>
               </div>
               <div class="flex flex-col md:flex-row gap-4 p-4 bg-white">
-                <!-- 1ï¸âƒ£ Who Pays -->
+                <!-- 1?¸âƒ£ Who Pays -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Who Pays</h3>
                   <div id="payerInputs" class="flex flex-col gap-2"></div>
@@ -159,19 +158,19 @@
                   </button>
                 </div>
 
-                <!-- 2ï¸âƒ£ Contributions -->
+                <!-- 2?¸âƒ£ Contributions -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Contributions</h3>
                   <div id="contributionsList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 3ï¸âƒ£ Amount Owed Based on Meals -->
+                <!-- 3?¸âƒ£ Amount Owed Based on Meals -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Meal Eaten Amount</h3>
                   <div id="amountOwedList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 4ï¸âƒ£ Settlement -->
+                <!-- 4?¸âƒ£ Settlement -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Settlement</h3>
                   <div id="paymentResult"></div>
@@ -203,28 +202,27 @@
     </div>
   </div>
 </div>
-<!-- ADD DEBT BUTTON -->
-
 
 <!-- DEBT MODAL -->
-<div id="debtModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded shadow-lg w-full max-w-2xl p-4 relative">
-    <h3 class="text-xl font-bold mb-4">Add Additional Debt</h3>
-
-    <div id="debtRows" class="flex flex-col gap-2 max-h-96 overflow-y-auto"></div>
-
-    <div class="flex justify-between mt-4">
-      <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onclick="addDebtRow()">Add Item</button>
-      <div>
-        <button class="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400 mr-2" onclick="closeDebtModal()">Cancel</button>
-        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" onclick="saveDebts()">Save Debts</button>
+<div id="debtModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6 relative max-h-[80vh]">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Add Additional Debt</h3>
+      <button onclick="closeDebtModal()" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+    </div>
+    <div id="debtRows" class="flex flex-col gap-2 max-h-96 overflow-y-auto border rounded p-2"></div>
+    <div class="flex justify-between items-center mt-6">
+      <button onclick="addDebtRow()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Item</button>
+      <div class="flex gap-2">
+        <button onclick="closeDebtModal()" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+        <button onclick="saveDebts()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save Debts</button>
       </div>
     </div>
-
-    <button onclick="closeDebtModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl">&times;</button>
   </div>
 </div>
+<!-- DEBT MODAL -->
 
+<!-- TOAST ERROR -->
 <div id="validationToast" class="fixed inset-x-0 bottom-0 z-50 p-4 hidden">
   <div class="flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-2 text-red-900 dark:border-red-700 dark:bg-red-800 dark:text-red-100">
     <span id="toastMessage" class="font-medium"></span>
@@ -235,6 +233,6 @@
     </button>
   </div>
 </div>
-</div>
+<!-- TOAST ERROR -->
 </body>
 </html>
