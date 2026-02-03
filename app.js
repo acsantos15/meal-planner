@@ -130,24 +130,41 @@ function addDebtRowToTable(debt) {
     const table = document.getElementById("mealTable");
     const row = table.insertRow(-1);
 
-    // Style debt row
-    row.className = "bg-primary text-white";
-    row.insertCell(0).innerText = "";
-    row.insertCell(1).innerHTML = `<strong>${debt.item}</strong>`;
-    row.insertCell(2).innerHTML = `<span>Additional Debt</span>`;
-    row.insertCell(3).innerHTML = `Price: <strong>${debt.amount.toFixed(2)}</strong>`;
-    row.insertCell(4).innerHTML = `Owed: <strong>${debt.amount.toFixed(2)}</strong>`;
-    row.insertCell(5).innerHTML = `
-        Requested by: <strong>${debt.requestedBy}</strong><br>
-        Paid by: <strong>${debt.boughtBy}</strong>
+    // Style debt row with better design
+    row.className = "bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-150 hover:to-pink-150 transition-colors";
+    
+    row.insertCell(0).innerHTML = `<span class='text-red-600 font-bold text-lg'>💳</span>`;
+    
+    const itemCell = row.insertCell(1);
+    itemCell.innerHTML = `<strong class='text-gray-800'>${debt.item}</strong>`;
+    itemCell.className = "font-semibold";
+    
+    const typeCell = row.insertCell(2);
+    typeCell.innerHTML = `<span class='bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold'>Additional Debt</span>`;
+    
+    const priceCell = row.insertCell(3);
+    priceCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    priceCell.className = "text-center";
+    
+    const owedCell = row.insertCell(4);
+    owedCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    owedCell.className = "text-center";
+    
+    const detailsCell = row.insertCell(5);
+    detailsCell.innerHTML = `
+        <div class='text-sm'>
+            <div class='mb-1'><span class='font-semibold text-gray-700'>Requested:</span> <strong class='text-gray-800'>${debt.requestedBy}</strong></div>
+            <div><span class='font-semibold text-gray-700'>Paid by:</span> <strong class='text-gray-800'>${debt.boughtBy}</strong></div>
+        </div>
     `;
 
     const actionCell = row.insertCell(6);
     actionCell.innerHTML = `
-        <button class="bg-del text-white px-3 py-1 rounded bg-del-hover">
+        <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">
             Delete
         </button>
     `;
+    actionCell.className = "text-center";
 
     actionCell.querySelector("button").onclick = () => {
         additionalDebts = additionalDebts.filter(d => d !== debt);
