@@ -50,20 +50,17 @@
 }
 
 .bg-recipe {
-  background-color: #ebf8e1a2;
-  position: relative; /* To position the pseudo-element */
+  background:
+    linear-gradient(
+      to right,
+      transparent 15%,
+      #c73030 15%,
+      #c73030 calc(15% + 1px),
+      transparent calc(15% + 1px)
+    ),
+    #ebf8e1a2;
 }
 
-.bg-recipe::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 15%;
-  width: 1px; /* Adjust thickness of the line */
-  background-color:  #c73030; /* Change the color of the line */
-  transform: translateX(-50%); /* Center the line */
-}
 
 
 .recipe-border{

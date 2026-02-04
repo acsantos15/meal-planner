@@ -100,7 +100,7 @@ function addDebtRow() {
 
     // Delete button (Placed beside other fields)
     const delBtn = document.createElement("button");
-    delBtn.textContent = "Del";
+    delBtn.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>';
     delBtn.className =
         "bg-del text-white px-3 py-2 rounded bg-del-hover md:col-span-1 h-fit"; 
     delBtn.onclick = () => debtRows.removeChild(row);
@@ -150,7 +150,7 @@ function addDebtRowToTable(debt) {
     const actionCell = row.insertCell(6);
     actionCell.innerHTML = `
         <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">
-            Delete
+            <i class="fa-solid fa-trash mr-1"></i>Delete
         </button>
     `;
     actionCell.className = "text-center";
@@ -219,7 +219,7 @@ function setPeople() {
 
         // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "Del";
+        delBtn.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>';
         delBtn.className = "bg-del text-white mx-2 px-2 py-1 rounded bg-del-hover";
         delBtn.addEventListener("click", () => {
             people.splice(i, 1); // remove from array
@@ -259,7 +259,7 @@ function setPeopleFromArray() {
 
         // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "Del";
+        delBtn.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>';
         delBtn.className = "bg-del text-white px-2 py-1 rounded bg-del-hover";
         delBtn.addEventListener("click", () => {
             people.splice(i, 1); // remove from array
@@ -335,7 +335,7 @@ function addIngredientRow(name = "") {
     priceInput.className = "ingPrice border border-primary px-2 py-1 rounded w-1/5 text-lg";
 
     const delBtn = document.createElement("button");
-    delBtn.textContent = "Del";
+    delBtn.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>';
     delBtn.className = "bg-del text-white px-2 py-1 rounded bg-del-hover";
     delBtn.onclick = () => div.removeChild(row);
 
@@ -408,7 +408,7 @@ function loadWhoWillEat() {
     checkAllContainer.className = "flex items-center gap-2 mt-4 pt-3 border-t border-primary";
 
     const checkAllLunchBtn = document.createElement("button");
-    checkAllLunchBtn.textContent = "Check All Lunch";
+    checkAllLunchBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>Check All Lunch';
     checkAllLunchBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
     checkAllLunchBtn.onclick = () => {
         people.forEach((p, i) => {
@@ -417,7 +417,7 @@ function loadWhoWillEat() {
     };
 
     const checkAllDinnerBtn = document.createElement("button");
-    checkAllDinnerBtn.textContent = "Check All Dinner";
+    checkAllDinnerBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>Check All Dinner';
     checkAllDinnerBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
     checkAllDinnerBtn.onclick = () => {
         people.forEach((p, i) => {
@@ -426,7 +426,7 @@ function loadWhoWillEat() {
     };
 
     const uncheckAllBtn = document.createElement("button");
-    uncheckAllBtn.textContent = "Uncheck All";
+    uncheckAllBtn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>Uncheck All';
     uncheckAllBtn.className = "bg-gray-400 text-white px-3 py-1 rounded text-sm hover:bg-gray-500";
     uncheckAllBtn.onclick = () => {
         people.forEach((p, i) => {
@@ -597,8 +597,8 @@ function addMeal() {
     const actionCell = row.cells[6] || row.insertCell(6);
     actionCell.className = "px-4 py-2 flex flex-wrap items-center justify-center gap-2";
     actionCell.innerHTML = `
-        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold transition-colors">Edit</button>
-        <button class="bg-del bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors">Delete</button>
+        <button class="bg-edit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold transition-colors"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit</button>
+        <button class="bg-del bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition-colors"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
     `;
 
     // Edit functionality
@@ -631,7 +631,7 @@ function addMeal() {
         });
         // Switch button to Update
         const btn = document.querySelector('button[onclick="addMeal()"]');
-        btn.textContent = "Update Meal";
+        btn.innerHTML = '<i class="fa-solid fa-pen-to-square mr-1"></i>Update Meal';
         editMealIndex = row.rowIndex - 1;
     };
 
@@ -655,7 +655,7 @@ function clearMealForm() {
     document.getElementById("ingredients").innerHTML = "";
     loadWhoWillEat();
     const btn = document.querySelector('button[onclick="addMeal()"]');
-    if (btn) btn.textContent = "Add Meal";
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i>Add Meal';
     editMealIndex = null;
 }
 // ===== ADD MEAL =====
