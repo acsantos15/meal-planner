@@ -1,13 +1,14 @@
 // ===== GLOBAL DATA =====
 let people = [];
 let meals = [];
-let editMealIndex = null; // Track which meal is being edited
+let editMealIndex = null;
 let additionalDebts = [];
+// ===== GLOBAL DATA =====
 
 // ===== Open Close Modal (Debt) =====
 function openDebtModal() {
     document.getElementById("debtModal").classList.remove("hidden");
-    if (additionalDebts.length === 0) addDebtRow(); // add first row by default
+    if (additionalDebts.length === 0) addDebtRow();
 }
 
 function closeDebtModal() {
@@ -99,18 +100,17 @@ function addDebtRow() {
 
     // Delete button (Placed beside other fields)
     const delBtn = document.createElement("button");
-    delBtn.textContent = "Del"; // Changed to "Del"
+    delBtn.textContent = "Del";
     delBtn.className =
-        "bg-del text-white px-3 py-2 rounded bg-del-hover md:col-span-1 h-fit"; // Keep it at the end of the row
+        "bg-del text-white px-3 py-2 rounded bg-del-hover md:col-span-1 h-fit"; 
     delBtn.onclick = () => debtRows.removeChild(row);
 
-    // Append all fields and the delete button with adjusted column spans
     row.append(
-        createField({ label: "Item", element: itemInput, colSpan: 3 }), // Reduced colSpan for item input
-        createField({ label: "Amount", element: amountInput, colSpan: 2 }), // Reduced colSpan for amount input
-        createField({ label: "Paid By", element: paidBySelect, colSpan: 3 }), // Kept colSpan for select fields
-        createField({ label: "Requested By", element: requestedBySelect, colSpan: 3 }), // Kept colSpan for select fields
-        delBtn // Append delete button at the end of the row
+        createField({ label: "Item", element: itemInput, colSpan: 3 }),
+        createField({ label: "Amount", element: amountInput, colSpan: 2 }), 
+        createField({ label: "Paid By", element: paidBySelect, colSpan: 3 }),
+        createField({ label: "Requested By", element: requestedBySelect, colSpan: 3 }), 
+        delBtn
     );
 
     debtRows.appendChild(row);
@@ -123,7 +123,6 @@ function addDebtRowToTable(debt) {
     const table = document.getElementById("mealTable");
     const row = table.insertRow(-1);
 
-    // Style debt row with better design
     row.className = "bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-150 hover:to-pink-150 transition-colors";
     
     row.insertCell(0).innerHTML = `<span class='bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold'>Additional Debt</span>`;
@@ -480,134 +479,6 @@ function loadPayerInputs() {
         div.appendChild(container);
     });
 }
-
-// Toggle and Calculator for Payer Inputs
-function togglePayerCalculator() {
-    const el = document.getElementById('payerCalculator');
-    if (!el) return;
-    el.classList.toggle('hidden');
-    el.setAttribute('aria-hidden', el.classList.contains('hidden'));
-    if (!el.classList.contains('hidden')) populatePayerSelect();
-}
-
-function populatePayerSelect() {
-    const sel = document.getElementById('payerSelect');
-    if (!sel) return;
-    sel.innerHTML = '';
-    people.forEach((p, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.text = p.name;
-        sel.appendChild(opt);
-    });
-}
-
-function appendCalc(ch) {
-    const d = document.getElementById('calcDisplay');
-    if (!d) return;
-    if (d.value === '0') d.value = ch;
-    else d.value += ch;
-}
-
-function clearCalc() {
-    const d = document.getElementById('calcDisplay');
-    if (!d) return;
-    d.value = '0';
-}
-
-function deleteLastCharacter() {
-    const d = document.getElementById('calcDisplay');
-    if (!d || d.value === '0') return; 
-    d.value = d.value.slice(0, -1);
-    if (d.value === '') d.value = '0';
-}
-
-function evaluateCalc() {
-    const d = document.getElementById('calcDisplay');
-    if (!d) return;
-    try {
-        const v = Function('"use strict"; return (' + d.value + ')')();
-        d.value = Number(v).toFixed(2);
-    } catch (e) {
-        showToast('Invalid expression');
-    }
-}
-
-function setCalcToTotal() {
-    const totalMealCost = meals.reduce((s, m) => s + (m.total || 0), 0);
-    const totalDebt = additionalDebts.reduce((s, d) => s + (d.amount || 0), 0);
-    const total = totalMealCost + totalDebt;
-    const d = document.getElementById('calcDisplay');
-    if (d) d.value = total.toFixed(2);
-}
-
-function applyCalcToSelected() {
-    const sel = document.getElementById('payerSelect');
-    if (!sel) return;
-    const idx = Number(sel.value);
-    if (isNaN(idx)) { showToast('Select a person to apply amount to'); return; }
-    const val = Number(document.getElementById('calcDisplay').value) || 0;
-    const input = document.getElementById(`contrib_${idx}`);
-    if (input) input.value = val.toFixed(2);
-    else showToast('Payer inputs not loaded yet');
-}
-
-document.addEventListener('keydown', function(event) {
-    const key = event.key;
-
-    // Prevent default behavior for certain keys (like typing in text fields)
-    if (event.target.tagName === 'INPUT' && event.target.type === 'text') return;
-
-    // Number keys (0-9) and numpad keys
-    if (key >= '0' && key <= '9') {
-        appendCalc(key);  // Append the number to the display
-    }
-
-    // Operator keys
-    if (key === '+' || key === '-' || key === '*' || key === '/') {
-        appendCalc(key);  // Append the operator to the display
-    }
-
-    // Handle Enter or Equals key for evaluation
-    if (key === 'Enter' || key === '=') {
-        evaluateCalc();  // Evaluate the expression
-    }
-
-    // Handle decimal point
-    if (key === '.') {
-        appendCalc('.');  // Append decimal point
-    }
-
-    // Handle Backspace (clear display)
-    if (key === 'Backspace') {
-        deleteLastCharacter();  // Delete last character from the display
-    }
-
-    // Handle other keys like NumPad keys (specific for numpad input)
-    if (key === 'Numpad1') appendCalc('1');
-    if (key === 'Numpad2') appendCalc('2');
-    if (key === 'Numpad3') appendCalc('3');
-    if (key === 'Numpad4') appendCalc('4');
-    if (key === 'Numpad5') appendCalc('5');
-    if (key === 'Numpad6') appendCalc('6');
-    if (key === 'Numpad7') appendCalc('7');
-    if (key === 'Numpad8') appendCalc('8');
-    if (key === 'Numpad9') appendCalc('9');
-    if (key === 'Numpad0') appendCalc('0');
-    if (key === 'NumpadAdd') appendCalc('+');
-    if (key === 'NumpadSubtract') appendCalc('-');
-    if (key === 'NumpadMultiply') appendCalc('*');
-    if (key === 'NumpadDivide') appendCalc('/');
-    if (key === 'NumpadDecimal') appendCalc('.');
-
-    // Handle Enter (Enter on NumPad is the same as normal Enter key)
-    if (key === 'NumpadEnter') {
-        evaluateCalc();
-    }
-
-    // Prevent default behavior for certain keys (like scrolling with arrow keys)
-    event.preventDefault();
-});
 
 
 // ===== LOAD PAYER INPUTS =====
