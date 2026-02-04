@@ -71,6 +71,10 @@ function applyCalcToSelected() {
 
 document.addEventListener('keydown', function(event) {
     const key = event.key;
+    const calculator = document.getElementById('payerCalculator');
+
+    // Only allow numpad functionality when the calculator is visible
+    if (calculator && calculator.classList.contains('hidden')) return;
 
     if (event.target.tagName === 'INPUT' && event.target.type === 'text') return;
 

@@ -23,7 +23,7 @@ function addDebtRow() {
     const debtRows = document.getElementById("debtRows");
 
     const row = document.createElement("div");
-    row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b pb-3"; // Adjust grid
+    row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b pb-3";
 
     // Helper to create floating label input/select
     function createField({ label, element, colSpan }) {
@@ -308,7 +308,7 @@ function loadRecipe() {
 
     if (recipeDB[mealName]) {
         recipeDB[mealName].forEach(ing => {
-            addIngredientRow(ing.name); // use DOM method
+            addIngredientRow(ing.name);
         });
     } else {
         addIngredientRow();
@@ -827,4 +827,13 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPayerInputs();
 });
 // ===== INITIALIZATION =====
+
+const sidebar = document.getElementById("sidebar");
+
+sidebar.addEventListener("scroll", () => {
+  const scrollY = sidebar.scrollTop;
+  // Move background exactly with content
+  sidebar.style.backgroundPosition = `0 ${scrollY}px, 0 0`;
+});
+
 

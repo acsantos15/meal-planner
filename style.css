@@ -49,18 +49,25 @@
   color: white;
 }
 
+.bg-recipe {
+  background-color: #ebf8e1a2;
+  position: relative; /* To position the pseudo-element */
+}
 
-/* style.css */
+.bg-recipe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 15%;
+  width: 1px; /* Adjust thickness of the line */
+  background-color:  #c73030; /* Change the color of the line */
+  transform: translateX(-50%); /* Center the line */
+}
 
-/* Pure black background with optional subtle stars */
-.bg-space {
-  background-color: #000; /* pure black */
-  background-image: 
-    radial-gradient(white 1px, transparent 1px),
-    radial-gradient(white 1px, transparent 1px),
-    radial-gradient(white 1px, transparent 1px);
-  background-size: 50px 50px, 30px 30px, 80px 80px; /* star density */
-  background-position: 0 0, 10px 20px, 40px 60px;     /* scatter stars */
+
+.recipe-border{
+  border-color: #3f87a6;
 }
 
 /* Calculator tooltip and mobile tweaks */

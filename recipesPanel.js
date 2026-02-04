@@ -37,9 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     filtered.forEach(r => {
       const li = document.createElement("li");
-      li.textContent = r;
       li.className =
-        "cursor-pointer px-3 py-1 bg-hover-nav hover:text-white rounded";
+        "cursor-pointer py-1 border-t-2 border-t-[#3ca9d8]  bg-transparent w-full bg-hover-nav hover:text-white list-disc";
+      
+      // Create a new element for the text content (e.g., an anchor or a div)
+      const textNode = document.createElement("a");
+      textNode.textContent = `• ${r}`;
+      textNode.className = "inline-block px-7"; // Padding applied to the text only
+
+      li.appendChild(textNode);
 
       li.addEventListener("click", () => {
         const mealInput = document.getElementById("mealName");
@@ -52,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       recipeUl.appendChild(li);
     });
+
   }
 
   // Search recipes
