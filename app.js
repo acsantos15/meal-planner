@@ -403,42 +403,36 @@ function loadWhoWillEat() {
         div.appendChild(container);
     });
 
-    // Add Check All buttons at the bottom
+    // Add Check All toggle buttons at the bottom
     const checkAllContainer = document.createElement("div");
     checkAllContainer.className = "flex items-center gap-2 mt-4 pt-3 border-t border-primary";
 
     const checkAllLunchBtn = document.createElement("button");
-    checkAllLunchBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>Check All Lunch';
+    checkAllLunchBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>All Lunch';
     checkAllLunchBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
     checkAllLunchBtn.onclick = () => {
+        // Check if all lunch boxes are already checked
+        const allChecked = people.every((p, i) => document.getElementById(`eat_lunch_${i}`).checked);
         people.forEach((p, i) => {
-            document.getElementById(`eat_lunch_${i}`).checked = true;
+            document.getElementById(`eat_lunch_${i}`).checked = !allChecked;
         });
     };
 
     const checkAllDinnerBtn = document.createElement("button");
-    checkAllDinnerBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>Check All Dinner';
+    checkAllDinnerBtn.innerHTML = '<i class="fa-solid fa-utensils mr-1"></i>All Dinner';
     checkAllDinnerBtn.className = "bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary hover:opacity-90";
     checkAllDinnerBtn.onclick = () => {
+        // Check if all dinner boxes are already checked
+        const allChecked = people.every((p, i) => document.getElementById(`eat_dinner_${i}`).checked);
         people.forEach((p, i) => {
-            document.getElementById(`eat_dinner_${i}`).checked = true;
-        });
-    };
-
-    const uncheckAllBtn = document.createElement("button");
-    uncheckAllBtn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i>Uncheck All';
-    uncheckAllBtn.className = "bg-gray-400 text-white px-3 py-1 rounded text-sm hover:bg-gray-500";
-    uncheckAllBtn.onclick = () => {
-        people.forEach((p, i) => {
-            document.getElementById(`eat_lunch_${i}`).checked = false;
-            document.getElementById(`eat_dinner_${i}`).checked = false;
+            document.getElementById(`eat_dinner_${i}`).checked = !allChecked;
         });
     };
 
     checkAllContainer.appendChild(checkAllLunchBtn);
     checkAllContainer.appendChild(checkAllDinnerBtn);
-    checkAllContainer.appendChild(uncheckAllBtn);
     div.appendChild(checkAllContainer);
+
 }
 // ===== WHO WILL EAT =====
 
