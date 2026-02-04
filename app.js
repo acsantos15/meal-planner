@@ -126,30 +126,27 @@ function addDebtRowToTable(debt) {
     // Style debt row with better design
     row.className = "bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-150 hover:to-pink-150 transition-colors";
     
-    row.insertCell(0).innerHTML = `<span class='text-red-600 font-bold text-lg'>💳</span>`;
+    row.insertCell(0).innerHTML = `<span class='bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold'>Additional Debt</span>`;
     
     const itemCell = row.insertCell(1);
-    itemCell.innerHTML = `<strong class='text-gray-800'>${debt.item}</strong>`;
+    itemCell.innerHTML = `<strong class='text-gray-800'>Item: ${debt.item}</strong>`;
     itemCell.className = "font-semibold";
     
-    const typeCell = row.insertCell(2);
-    typeCell.innerHTML = `<span class='bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold'>Additional Debt</span>`;
-    
-    const priceCell = row.insertCell(3);
-    priceCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    const priceCell = row.insertCell(2);
+    priceCell.innerHTML = `<span class='text-lg font-bold text-green-600'>Price: ₱${debt.amount.toFixed(2)}</span>`;
     priceCell.className = "text-center";
     
-    const owedCell = row.insertCell(4);
-    owedCell.innerHTML = `<span class='text-lg font-bold text-red-600'>₱${debt.amount.toFixed(2)}</span>`;
+    const owedCell = row.insertCell(3);
+    owedCell.innerHTML = `<span class='text-lg font-bold text-red-600'>Debt: ₱${debt.amount.toFixed(2)}</span>`;
     owedCell.className = "text-center";
     
-    const detailsCell = row.insertCell(5);
-    detailsCell.innerHTML = `
-        <div class='text-sm'>
-            <div class='mb-1'><span class='font-semibold text-gray-700'>Requested:</span> <strong class='text-gray-800'>${debt.requestedBy}</strong></div>
-            <div><span class='font-semibold text-gray-700'>Paid by:</span> <strong class='text-gray-800'>${debt.boughtBy}</strong></div>
-        </div>
-    `;
+    const reqCell = row.insertCell(4);
+    reqCell.innerHTML = `<div class='mb-1'><span class='font-semibold text-gray-700'>Requested:</span> <strong class='text-gray-800'>${debt.requestedBy}</strong></div>`;
+    reqCell.className = "text-center";
+    
+    const boughtCell = row.insertCell(5);
+    boughtCell.innerHTML = `<div><span class='font-semibold text-gray-700'>Paid by:</span> <strong class='text-gray-800'>${debt.boughtBy}</strong></div>`;
+    boughtCell.className = "text-center";
 
     const actionCell = row.insertCell(6);
     actionCell.innerHTML = `
@@ -483,6 +480,71 @@ function loadPayerInputs() {
         div.appendChild(container);
     });
 }
+
+// Toggle and Calculator for Payer Inputs
+function togglePayerCalculator() {
+    const el = document.getElementById('payerCalculator');
+    if (!el) return;
+    el.classList.toggle('hidden');
+    el.setAttribute('aria-hidden', el.classList.contains('hidden'));
+    if (!el.classList.contains('hidden')) populatePayerSelect();
+}
+
+function populatePayerSelect() {
+    const sel = document.getElementById('payerSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    people.forEach((p, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.text = p.name;
+        sel.appendChild(opt);
+    });
+}
+
+function appendCalc(ch) {
+    const d = document.getElementById('calcDisplay');
+    if (!d) return;
+    if (d.value === '0') d.value = ch;
+    else d.value += ch;
+}
+
+function clearCalc() {
+    const d = document.getElementById('calcDisplay');
+    if (!d) return;
+    d.value = '0';
+}
+
+function evaluateCalc() {
+    const d = document.getElementById('calcDisplay');
+    if (!d) return;
+    try {
+        const v = Function('"use strict"; return (' + d.value + ')')();
+        d.value = Number(v).toFixed(2);
+    } catch (e) {
+        showToast('Invalid expression');
+    }
+}
+
+function setCalcToTotal() {
+    const totalMealCost = meals.reduce((s, m) => s + (m.total || 0), 0);
+    const totalDebt = additionalDebts.reduce((s, d) => s + (d.amount || 0), 0);
+    const total = totalMealCost + totalDebt;
+    const d = document.getElementById('calcDisplay');
+    if (d) d.value = total.toFixed(2);
+}
+
+function applyCalcToSelected() {
+    const sel = document.getElementById('payerSelect');
+    if (!sel) return;
+    const idx = Number(sel.value);
+    if (isNaN(idx)) { showToast('Select a person to apply amount to'); return; }
+    const val = Number(document.getElementById('calcDisplay').value) || 0;
+    const input = document.getElementById(`contrib_${idx}`);
+    if (input) input.value = val.toFixed(2);
+    else showToast('Payer inputs not loaded yet');
+}
+
 // ===== LOAD PAYER INPUTS =====
 
 // ===== ADD MEAL =====
@@ -634,7 +696,7 @@ function addMeal() {
         // Switch button to Update
         const btn = document.querySelector('button[onclick="addMeal()"]');
         btn.textContent = "Update Meal";
-        editMealIndex = row.rowIndex - 1; // -1 for header
+        editMealIndex = row.rowIndex - 1;
     };
 
     // Delete functionality
@@ -780,7 +842,7 @@ function computePayment(skipValidation = false) {
 
     const settlementDiv = document.getElementById("paymentResult");
     settlementDiv.innerHTML = settlements.length === 0
-        ? "<div class='text-center text-green-600 font-bold py-6 text-lg'>✓ All settled, no one owes anything!</div>"
+        ? "<div class='text-center text-green-600 font-bold py-6 text-lg'>�? All settled, no one owes anything!</div>"
         : settlements.map((s, idx) => {
             // Parse the settlement string to extract names and amount
             const match = s.match(/(.+?) pays (.+?): (.+)/);
@@ -791,7 +853,7 @@ function computePayment(skipValidation = false) {
                         <div class='flex justify-between items-center'>
                             <div class='flex items-center gap-2 flex-1'>
                                 <span class='font-semibold text-gray-700'>${payer.trim()}</span>
-                                <span class='text-blue-500 font-bold'>→</span>
+                                <span class='text-blue-500 font-bold'>�?</span>
                                 <span class='font-semibold text-gray-700'>${receiver.trim()}</span>
                             </div>
                             <span class='font-bold text-blue-600'>₱${amount.trim()}</span>
@@ -830,108 +892,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 // ===== INITIALIZATION =====
 
-// ===== CAPTURE AND COPY AS IMAGE =====
-async function captureAndCopy() {
-    try {
-        showToast("Capturing image...");
-        
-        // Create a container for screenshot
-        const screenshotContainer = document.createElement("div");
-        screenshotContainer.style.position = "fixed";
-        screenshotContainer.style.top = "0";
-        screenshotContainer.style.left = "0";
-        screenshotContainer.style.width = "1400px";
-        screenshotContainer.style.backgroundColor = "white";
-        screenshotContainer.style.padding = "20px";
-        screenshotContainer.style.zIndex = "-9999";
-        screenshotContainer.style.overflow = "visible";
-
-        // Style for titles
-        const titleStyle = {
-            fontSize: "24px",
-            fontWeight: "bold",
-            marginBottom: "15px",
-            marginTop: "20px",
-            color: "#333"
-        };
-
-        // MEAL TABLE Section
-        const mealDiv = document.createElement("div");
-        const mealTitle = document.createElement("h2");
-        mealTitle.textContent = "MEAL TABLE";
-        Object.assign(mealTitle.style, titleStyle);
-        mealDiv.appendChild(mealTitle);
-        
-        const mealTableClone = document.getElementById("mealTable").cloneNode(true);
-        mealTableClone.style.marginBottom = "30px";
-        mealDiv.appendChild(mealTableClone);
-
-        // CONTRIBUTIONS Section
-        const contribDiv = document.createElement("div");
-        const contribTitle = document.createElement("h2");
-        contribTitle.textContent = "CONTRIBUTIONS";
-        Object.assign(contribTitle.style, titleStyle);
-        contribDiv.appendChild(contribTitle);
-        
-        const contribList = document.getElementById("contributionsList").cloneNode(true);
-        contribList.style.marginBottom = "30px";
-        contribDiv.appendChild(contribList);
-
-        // BREAKDOWN Section
-        const breakdownDiv = document.createElement("div");
-        const breakdownTitle = document.createElement("h2");
-        breakdownTitle.textContent = "BREAKDOWN (Amount Owed)";
-        Object.assign(breakdownTitle.style, titleStyle);
-        breakdownDiv.appendChild(breakdownTitle);
-        
-        const breakdownList = document.getElementById("amountOwedList").cloneNode(true);
-        breakdownList.style.marginBottom = "30px";
-        breakdownDiv.appendChild(breakdownList);
-
-        // SETTLEMENT Section
-        const settlementDiv = document.createElement("div");
-        const settlementTitle = document.createElement("h2");
-        settlementTitle.textContent = "SETTLEMENT";
-        Object.assign(settlementTitle.style, titleStyle);
-        settlementDiv.appendChild(settlementTitle);
-        
-        const settlementResult = document.getElementById("paymentResult").cloneNode(true);
-        settlementDiv.appendChild(settlementResult);
-
-        // Append all sections to container
-        screenshotContainer.appendChild(mealDiv);
-        screenshotContainer.appendChild(contribDiv);
-        screenshotContainer.appendChild(breakdownDiv);
-        screenshotContainer.appendChild(settlementDiv);
-
-        document.body.appendChild(screenshotContainer);
-
-        // Capture the container as image
-        const canvas = await html2canvas(screenshotContainer, {
-            backgroundColor: "white",
-            scale: 2,
-            logging: false,
-            useCORS: true
-        });
-
-        // Remove the container
-        document.body.removeChild(screenshotContainer);
-
-        // Convert canvas to blob and copy to clipboard
-        canvas.toBlob(blob => {
-            navigator.clipboard.write([
-                new ClipboardItem({
-                    "image/png": blob
-                })
-            ]).then(() => {
-                showToast("✓ Image copied to clipboard!");
-            }).catch(err => {
-                showToast("Failed to copy image: " + err.message);
-            });
-        });
-    } catch (error) {
-        showToast("Error: " + error.message);
-        console.error("Capture error:", error);
-    }
-}
-// ===== CAPTURE AND COPY AS IMAGE =====

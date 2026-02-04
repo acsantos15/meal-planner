@@ -62,3 +62,75 @@
   background-size: 50px 50px, 30px 30px, 80px 80px; /* star density */
   background-position: 0 0, 10px 20px, 40px 60px;     /* scatter stars */
 }
+
+/* Calculator tooltip and mobile tweaks */
+.tooltip {
+  position: absolute;
+  right: -340px;
+  top: 0;
+  width: 320px;
+  background: var(--color-bg-secondary, #fff);
+  border: 1px solid var(--color-border, #9678B6);
+  padding: 0.75rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 1200;
+  border-radius: 8px;
+}
+.tooltip .calc-display input {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  text-align: right;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+.tooltip .calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+.tooltip .calc-grid button {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+}
+.tooltip .calc-grid .span-2 {
+  grid-column: span 2;
+}
+.tooltip .calc-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+.tooltip select {
+  flex: 1;
+}
+/* Make tooltip full width on small screens */
+@media (max-width: 900px) {
+  .tooltip {
+    position: static;
+    right: auto;
+    top: auto;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Bigger touch targets for mobile */
+@media (max-width: 1300px) {
+  input, select, textarea, button {
+    font-size: 1.6rem !important;
+    min-height: 3rem !important;
+    padding: 0.9rem 1rem !important;
+    border-radius: 0.6rem !important;
+  }
+  .tooltip {
+    right: -20px;
+    width: 320px;
+  }
+}
+

@@ -5,7 +5,7 @@
 <title>Weekly Meal Cost App</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
+<script src="copyasimage.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="recipes.js"></script>
 <script src="recipesPanel.js"></script>
@@ -154,28 +154,66 @@
                   <p class="text-xl font-bold leading-tight tracking-tight text-white md:text-xl">Settlement</p>
               </div>
               <div class="flex flex-col md:flex-row gap-4 p-4 bg-white">
-                <!-- 1?ï¿½ï¿½âƒ£ Who Pays -->
-                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
-                  <h3 class="font-bold text-lg text-primary mb-2">Who Pays</h3>
+                <!-- 1??¿½?¿½âƒ£ Who Pays -->
+                <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4" id="whoPaysSection">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-bold text-lg text-primary m-0">Who Pays</h3>
+                    <div class="relative">
+                      <button id="togglePayerCalcBtn" onclick="togglePayerCalculator()" class="bg-white text-primary border-2 border-white bg-hover font-bold py-1 px-3 rounded">Calc</button>
+                      <div id="payerCalculator" class="hidden tooltip" aria-hidden="true">
+                        <div class="calc-display">
+                          <input id="calcDisplay" type="text" readonly value="0" />
+                        </div>
+                        <div class="calc-grid">
+                          <button onclick="appendCalc('7')">7</button>
+                          <button onclick="appendCalc('8')">8</button>
+                          <button onclick="appendCalc('9')">9</button>
+                          <button onclick="appendCalc('/')">/</button>
+
+                          <button onclick="appendCalc('4')">4</button>
+                          <button onclick="appendCalc('5')">5</button>
+                          <button onclick="appendCalc('6')">6</button>
+                          <button onclick="appendCalc('*')">*</button>
+
+                          <button onclick="appendCalc('1')">1</button>
+                          <button onclick="appendCalc('2')">2</button>
+                          <button onclick="appendCalc('3')">3</button>
+                          <button onclick="appendCalc('-')">-</button>
+
+                          <button onclick="appendCalc('0')">0</button>
+                          <button onclick="appendCalc('.')">.</button>
+                          <button onclick="evaluateCalc()">=</button>
+                          <button onclick="appendCalc('+')">+</button>
+
+                          <button onclick="clearCalc()" class="span-2">C</button>
+                          <button onclick="setCalcToTotal()">Use Total</button>
+                        </div>
+                        <div class="calc-actions">
+                          <select id="payerSelect" class="px-2 py-1"></select>
+                          <button onclick="applyCalcToSelected()" class="bg-primary text-white px-3 py-1 rounded">Apply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div id="payerInputs" class="flex flex-col gap-2"></div>
                   <button onclick="computePayment()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-3">
                     Compute Payment
                   </button>
                 </div>
 
-                <!-- 2?ï¿½ï¿½âƒ£ Contributions -->
+                <!-- 2??¿½?¿½âƒ£ Contributions -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Contributions</h3>
                   <div id="contributionsList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 3?ï¿½ï¿½âƒ£ Amount Owed Based on Meals -->
+                <!-- 3??¿½?¿½âƒ£ Amount Owed Based on Meals -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Breakdown</h3>
                   <div id="amountOwedList" class="flex flex-col gap-1"></div>
                 </div>
 
-                <!-- 4?ï¿½ï¿½âƒ£ Settlement -->
+                <!-- 4??¿½?¿½âƒ£ Settlement -->
                 <div class="flex flex-col border border-primary rounded shadow-sm p-3 w-full md:w-1/4">
                   <h3 class="font-bold text-lg text-primary mb-2">Settlement</h3>
                   <div id="paymentResult"></div>
