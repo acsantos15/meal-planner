@@ -515,6 +515,13 @@ function clearCalc() {
     d.value = '0';
 }
 
+function deleteLastCharacter() {
+    const d = document.getElementById('calcDisplay');
+    if (!d || d.value === '0') return; 
+    d.value = d.value.slice(0, -1);
+    if (d.value === '') d.value = '0';
+}
+
 function evaluateCalc() {
     const d = document.getElementById('calcDisplay');
     if (!d) return;
@@ -544,6 +551,64 @@ function applyCalcToSelected() {
     if (input) input.value = val.toFixed(2);
     else showToast('Payer inputs not loaded yet');
 }
+
+document.addEventListener('keydown', function(event) {
+    const key = event.key;
+
+    // Prevent default behavior for certain keys (like typing in text fields)
+    if (event.target.tagName === 'INPUT' && event.target.type === 'text') return;
+
+    // Number keys (0-9) and numpad keys
+    if (key >= '0' && key <= '9') {
+        appendCalc(key);  // Append the number to the display
+    }
+
+    // Operator keys
+    if (key === '+' || key === '-' || key === '*' || key === '/') {
+        appendCalc(key);  // Append the operator to the display
+    }
+
+    // Handle Enter or Equals key for evaluation
+    if (key === 'Enter' || key === '=') {
+        evaluateCalc();  // Evaluate the expression
+    }
+
+    // Handle decimal point
+    if (key === '.') {
+        appendCalc('.');  // Append decimal point
+    }
+
+    // Handle Backspace (clear display)
+    if (key === 'Backspace') {
+        deleteLastCharacter();  // Delete last character from the display
+    }
+
+    // Handle other keys like NumPad keys (specific for numpad input)
+    if (key === 'Numpad1') appendCalc('1');
+    if (key === 'Numpad2') appendCalc('2');
+    if (key === 'Numpad3') appendCalc('3');
+    if (key === 'Numpad4') appendCalc('4');
+    if (key === 'Numpad5') appendCalc('5');
+    if (key === 'Numpad6') appendCalc('6');
+    if (key === 'Numpad7') appendCalc('7');
+    if (key === 'Numpad8') appendCalc('8');
+    if (key === 'Numpad9') appendCalc('9');
+    if (key === 'Numpad0') appendCalc('0');
+    if (key === 'NumpadAdd') appendCalc('+');
+    if (key === 'NumpadSubtract') appendCalc('-');
+    if (key === 'NumpadMultiply') appendCalc('*');
+    if (key === 'NumpadDivide') appendCalc('/');
+    if (key === 'NumpadDecimal') appendCalc('.');
+
+    // Handle Enter (Enter on NumPad is the same as normal Enter key)
+    if (key === 'NumpadEnter') {
+        evaluateCalc();
+    }
+
+    // Prevent default behavior for certain keys (like scrolling with arrow keys)
+    event.preventDefault();
+});
+
 
 // ===== LOAD PAYER INPUTS =====
 
