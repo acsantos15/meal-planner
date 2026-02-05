@@ -783,7 +783,7 @@ function computePayment(skipValidation = false) {
                         <div class='flex justify-between items-center'>
                             <div class='flex items-center gap-2 flex-1'>
                                 <span class='font-semibold text-gray-700'>${payer.trim()}</span>
-                                <span class='text-blue-500 font-bold'>�?</span>
+                                <span class='text-blue-500 font-bold'>-></span>
                                 <span class='font-semibold text-gray-700'>${receiver.trim()}</span>
                             </div>
                             <span class='font-bold text-blue-600'>₱${amount.trim()}</span>

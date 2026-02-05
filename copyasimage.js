@@ -1,4 +1,22 @@
 // ===== CAPTURE AND COPY AS IMAGE =====
+function tightenListSpacing(listEl) {
+    listEl.style.width = "fit-content";
+    listEl.style.padding = "0";
+    listEl.style.margin = "0";
+
+    listEl.querySelectorAll("li").forEach(li => {
+        // kill inherited layout
+        li.style.display = "inline-grid";
+        li.style.gridTemplateColumns = "auto auto";
+        li.style.columnGap = "6px"; // ? VERY close
+        li.style.justifyContent = "start";
+        li.style.width = "fit-content";
+        li.style.maxWidth = "none";
+        li.style.padding = "2px 0";
+        li.style.margin = "0";
+    });
+}
+
 async function captureAndCopy() {
     try {
         showToast("Capturing image...");
@@ -19,9 +37,18 @@ async function captureAndCopy() {
             fontSize: "24px",
             fontWeight: "bold",
             marginBottom: "15px",
-            marginTop: "20px",
+            marginTop: "0px",
             color: "#333"
         };
+
+        // Common style for the bordered sections
+        const sectionStyle = {
+            border: "2px solid purple",
+            borderRadius: "12px",
+            padding: "15px",
+            marginRight: "10px"
+        };
+
 
         // MEAL TABLE Section
         const mealDiv = document.createElement("div");
@@ -66,11 +93,24 @@ async function captureAndCopy() {
         const settlementResult = document.getElementById("paymentResult").cloneNode(true);
         settlementDiv.appendChild(settlementResult);
 
-        // Append all sections to container
+
+        // Apply to each section
+        Object.assign(contribDiv.style, sectionStyle);
+        Object.assign(breakdownDiv.style, sectionStyle);
+        Object.assign(settlementDiv.style, sectionStyle);
+
+        const horizontalContainer = document.createElement("div");
+        horizontalContainer.style.display = "flex";
+        horizontalContainer.style.justifyContent = "flex-start";
+        horizontalContainer.style.alignItems = "flex-start";
+        horizontalContainer.style.gap = "10px";
+
+        horizontalContainer.appendChild(contribDiv);
+        horizontalContainer.appendChild(breakdownDiv);
+        horizontalContainer.appendChild(settlementDiv);
+
         screenshotContainer.appendChild(mealDiv);
-        screenshotContainer.appendChild(contribDiv);
-        screenshotContainer.appendChild(breakdownDiv);
-        screenshotContainer.appendChild(settlementDiv);
+        screenshotContainer.appendChild(horizontalContainer);
 
         document.body.appendChild(screenshotContainer);
 
