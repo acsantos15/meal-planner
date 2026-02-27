@@ -12,6 +12,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="recipes.js"></script>
 <script src="recipesPanel.js"></script>
+
+<!-- Supabase client (replace URL/key below) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <!--Container -->
@@ -26,6 +29,9 @@
         </button>
         <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="sidebarToggle()">
           <i class="fa-solid fa-book-open mr-2"></i>Recipes
+        </button>
+        <button class="bg-white text-primary border-2 border-white bg-hover font-bold py-2 px-4 rounded" onclick="loadIngredientsFromDb()">
+          <i class="fa-solid fa-download mr-2"></i>Load from DB
         </button>
       </div>
     </header>

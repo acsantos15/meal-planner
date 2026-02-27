@@ -1,3 +1,107 @@
+// ===== SUPABASE INTEGRATION =====
+// Replace the URL and anon key with your own project values
+const SUPABASE_URL = 'https://tsrrewlcoyjjvlwczplt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FS1tlXXumCwmuldS43kSAQ_h9gyinyn';
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// helpers for reading/writing tables
+async function loadPeopleFromDb() {
+    const { data, error } = await supabaseClient.from('people').select('*').order('id');
+    if (error) console.error('loadPeopleFromDb', error);
+    return data ? data.map(r => ({ name: r.name })) : [];
+}
+async function syncPeople() {
+    // wipe and re‑insert current list
+    await supabaseClient.from('people').delete();
+    if (people.length) {
+        await supabaseClient.from('people').insert(people.map((p, i) => ({ id: i, name: p.name })));
+    }
+}
+
+async function loadMealsFromDb() {
+    const { data, error } = await supabaseClient.from('meals').select('data');
+    if (error) console.error('loadMealsFromDb', error);
+    return data ? data.map(r => r.data) : [];
+}
+async function syncMeals() {
+    await supabaseClient.from('meals').delete();
+    if (meals.length) {
+        await supabaseClient.from('meals').insert(meals.map(m => ({ data: m })));
+    }
+}
+
+async function loadDebtsFromDb() {
+    const { data, error } = await supabaseClient.from('debts').select('data');
+    if (error) console.error('loadDebtsFromDb', error);
+    return data ? data.map(r => r.data) : [];
+}
+async function syncDebts() {
+    await supabaseClient.from('debts').delete();
+    if (additionalDebts.length) {
+        await supabaseClient.from('debts').insert(additionalDebts.map(d => ({ data: d })));
+    }
+}
+
+// helper used during initial load
+function fillMealFormWithData(m) {
+    document.getElementById("mealName").value = m.name;
+    document.getElementById("mealDay").value = m.day;
+    // ingredients
+    const ingredientsDiv = document.getElementById("ingredients");
+    ingredientsDiv.innerHTML = "";
+    m.ingredients.forEach(ing => {
+        addIngredientRow();
+        const rows = ingredientsDiv.querySelectorAll(".ingredientRow");
+        const last = rows[rows.length - 1];
+        last.querySelector(".ingName").value = ing.name;
+        last.querySelector(".ingPrice").value = ing.price;
+    });
+    // eaters
+    people.forEach((p, i) => {
+        document.getElementById(`eat_lunch_${i}`).checked = false;
+        document.getElementById(`eat_dinner_${i}`).checked = false;
+    });
+    m.eaters.forEach(e => {
+        const idx = people.findIndex(p => p.name === e.name);
+        if (idx !== -1) {
+            if (e.meals >= 1) document.getElementById(`eat_lunch_${idx}`).checked = true;
+            if (e.meals >= 2) document.getElementById(`eat_dinner_${idx}`).checked = true;
+        }
+    });
+}
+
+async function loadInitialData() {
+    // people
+    people = await loadPeopleFromDb();
+    if (people.length) {
+        document.getElementById("personCount").value = people.length;
+        setPeople();
+        people.forEach((p, i) => {
+            const input = document.getElementById(`person_${i}`);
+            if (input) input.value = p.name;
+        });
+    } else {
+        setPeople();
+    }
+
+    // debts
+    additionalDebts = await loadDebtsFromDb();
+    additionalDebts.forEach(addDebtRowToTable);
+
+    // meals
+    meals = [];
+    const table = document.getElementById("mealTable");
+    while (table.rows.length > 1) table.deleteRow(1);
+    const loaded = await loadMealsFromDb();
+    loaded.forEach(m => {
+        fillMealFormWithData(m);
+        addMeal();
+    });
+}
+
+window.addEventListener('DOMContentLoaded', loadInitialData);
+
 // ===== GLOBAL DATA =====
 let people = [];
 let meals = [];
@@ -184,6 +288,7 @@ function saveDebts() {
 
     closeDebtModal();
     updateSettlementPreview();
+    syncDebts();
 }
 // ===== Save Debts =====
 
@@ -274,6 +379,7 @@ function setPeopleFromArray() {
     updatePeople();
     loadWhoWillEat();
     loadPayerInputs();
+    syncPeople();
 }
 
 // Update dropdown or other elements
@@ -284,6 +390,8 @@ function updatePeople() {
     people.forEach((p, i) => {
         payer.innerHTML += `<option value="${i}">${p.name}</option>`;
     });
+    // persist the updated list
+    syncPeople();
 }
 
 // ===== PEOPLE ====
@@ -314,6 +422,45 @@ function loadRecipe() {
         addIngredientRow();
     }
     addBtn.style.display = "inline-block";
+}
+
+// load ingredients for the current meal name from the Supabase meals table
+async function loadIngredientsFromDb() {
+    const mealName = document.getElementById("mealName").value.trim();
+    if (!mealName) {
+        showToast("Enter a meal name before loading.");
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('meals')
+        .select('data')
+        .eq('data->>name', mealName)
+        .limit(1);
+
+    if (error) {
+        console.error('Supabase query error', error);
+        showToast('Failed to load from database');
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        showToast('No saved meal found for "' + mealName + '"');
+        return;
+    }
+
+    const m = data[0].data;
+    const div = document.getElementById("ingredients");
+    div.innerHTML = "";
+    m.ingredients.forEach(ing => {
+        addIngredientRow();
+        const rows = div.querySelectorAll(".ingredientRow");
+        const last = rows[rows.length - 1];
+        last.querySelector(".ingName").value = ing.name;
+        last.querySelector(".ingPrice").value = ing.price;
+    });
+    const addBtn = document.getElementById("addIngredientBtn");
+    if (addBtn) addBtn.style.display = "inline-block";
 }
 
 
@@ -638,10 +785,12 @@ function addMeal() {
         if (editMealIndex === row.rowIndex - 1) {
             clearMealForm();
         }
+        syncMeals();
     };
 
     // Clear form and reset button if not editing, or after update
     clearMealForm();
+    syncMeals();
 }
 
 function clearMealForm() {
