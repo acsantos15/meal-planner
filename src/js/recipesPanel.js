@@ -13,6 +13,7 @@ function sidebarToggle() {
   }
 }
 
+window.sidebarToggle = sidebarToggle;
 
 document.addEventListener("DOMContentLoaded", () => {
   const recipePanel = document.getElementById("recipePanel");
@@ -21,10 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const recipeUl = document.getElementById("recipeList");
 
   // Ensure recipeDB exists
-  if (typeof recipeDB === "undefined") window.recipeDB = {};
+  if (!window.recipeDB) window.recipeDB = {};
 
   // Convert recipeDB keys to array
-  let recipeList = Object.keys(recipeDB);
+  let recipeList = Object.keys(window.recipeDB);
 
   // Render recipe list function
   function renderRecipes(filter = "") {
@@ -42,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // Create a new element for the text content (e.g., an anchor or a div)
       const textNode = document.createElement("a");
-      textNode.textContent = `• ${r}`;
+      textNode.textContent = `? ${r}`;
       textNode.className = "inline-block px-7"; // Padding applied to the text only
 
       li.appendChild(textNode);
@@ -51,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const mealInput = document.getElementById("mealName");
         if (mealInput) mealInput.value = r;
 
-        if (typeof loadRecipe === "function") loadRecipe();
+        if (typeof window.loadRecipe === "function") window.loadRecipe();
 
         if (recipePanel) recipePanel.classList.add("hidden");
       });
@@ -74,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const newRecipe = prompt("Enter new recipe name:");
       if (newRecipe && !recipeList.includes(newRecipe)) {
         recipeList.push(newRecipe);
-        recipeDB[newRecipe] = [];
+        window.recipeDB[newRecipe] = [];
         renderRecipes();
       }
     });

@@ -1,4 +1,6 @@
 // ===== Calculator =====
+import { state } from './config.js';
+
 function togglePayerCalculator() {
     const el = document.getElementById('payerCalculator');
     if (!el) return;
@@ -11,7 +13,7 @@ function populatePayerSelect() {
     const sel = document.getElementById('payerSelect');
     if (!sel) return;
     sel.innerHTML = '';
-    people.forEach((p, i) => {
+    state.people.forEach((p, i) => {
         const opt = document.createElement('option');
         opt.value = i;
         opt.text = p.name;
@@ -51,8 +53,8 @@ function evaluateCalc() {
 }
 
 function setCalcToTotal() {
-    const totalMealCost = meals.reduce((s, m) => s + (m.total || 0), 0);
-    const totalDebt = additionalDebts.reduce((s, d) => s + (d.amount || 0), 0);
+    const totalMealCost = state.meals.reduce((s, m) => s + (m.total || 0), 0);
+    const totalDebt = state.additionalDebts.reduce((s, d) => s + (d.amount || 0), 0);
     const total = totalMealCost + totalDebt;
     const d = document.getElementById('calcDisplay');
     if (d) d.value = total.toFixed(2);
@@ -69,6 +71,13 @@ function applyCalcToSelected() {
     else showToast('Payer inputs not loaded yet');
 }
 
+window.togglePayerCalculator = togglePayerCalculator;
+window.appendCalc = appendCalc;
+window.clearCalc = clearCalc;
+window.evaluateCalc = evaluateCalc;
+window.setCalcToTotal = setCalcToTotal;
+window.applyCalcToSelected = applyCalcToSelected;
+
 document.addEventListener('keydown', function(event) {
     const key = event.key;
     const calculator = document.getElementById('payerCalculator');
@@ -78,46 +87,53 @@ document.addEventListener('keydown', function(event) {
 
     if (event.target.tagName === 'INPUT' && event.target.type === 'text') return;
 
+    let handled = false;
     if (key >= '0' && key <= '9') {
         appendCalc(key); 
+        handled = true;
     }
 
     if (key === '+' || key === '-' || key === '*' || key === '/') {
         appendCalc(key);
+        handled = true;
     }
 
     if (key === 'Enter' || key === '=') {
         evaluateCalc(); 
+        handled = true;
     }
 
     if (key === '.') {
         appendCalc('.'); 
+        handled = true;
     }
 
     if (key === 'Backspace') {
         deleteLastCharacter();  
+        handled = true;
     }
 
-    if (key === 'Numpad1') appendCalc('1');
-    if (key === 'Numpad2') appendCalc('2');
-    if (key === 'Numpad3') appendCalc('3');
-    if (key === 'Numpad4') appendCalc('4');
-    if (key === 'Numpad5') appendCalc('5');
-    if (key === 'Numpad6') appendCalc('6');
-    if (key === 'Numpad7') appendCalc('7');
-    if (key === 'Numpad8') appendCalc('8');
-    if (key === 'Numpad9') appendCalc('9');
-    if (key === 'Numpad0') appendCalc('0');
-    if (key === 'NumpadAdd') appendCalc('+');
-    if (key === 'NumpadSubtract') appendCalc('-');
-    if (key === 'NumpadMultiply') appendCalc('*');
-    if (key === 'NumpadDivide') appendCalc('/');
-    if (key === 'NumpadDecimal') appendCalc('.');
+    if (key === 'Numpad1') { appendCalc('1'); handled = true; }
+    if (key === 'Numpad2') { appendCalc('2'); handled = true; }
+    if (key === 'Numpad3') { appendCalc('3'); handled = true; }
+    if (key === 'Numpad4') { appendCalc('4'); handled = true; }
+    if (key === 'Numpad5') { appendCalc('5'); handled = true; }
+    if (key === 'Numpad6') { appendCalc('6'); handled = true; }
+    if (key === 'Numpad7') { appendCalc('7'); handled = true; }
+    if (key === 'Numpad8') { appendCalc('8'); handled = true; }
+    if (key === 'Numpad9') { appendCalc('9'); handled = true; }
+    if (key === 'Numpad0') { appendCalc('0'); handled = true; }
+    if (key === 'NumpadAdd') { appendCalc('+'); handled = true; }
+    if (key === 'NumpadSubtract') { appendCalc('-'); handled = true; }
+    if (key === 'NumpadMultiply') { appendCalc('*'); handled = true; }
+    if (key === 'NumpadDivide') { appendCalc('/'); handled = true; }
+    if (key === 'NumpadDecimal') { appendCalc('.'); handled = true; }
 
     if (key === 'NumpadEnter') {
         evaluateCalc();
+        handled = true;
     }
 
-    event.preventDefault();
+    if (handled) event.preventDefault();
 });
 // ===== Calculator =====

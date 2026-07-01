@@ -185,3 +185,6 @@ const recipeDB = {
         { name: "Egg", price: 0 },
     ],
 };
+
+window.recipeDB = recipeDB;
+

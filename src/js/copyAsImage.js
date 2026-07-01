@@ -1,4 +1,6 @@
 // ===== CAPTURE AND COPY AS IMAGE =====
+import html2canvas from 'html2canvas';
+
 function tightenListSpacing(listEl) {
     listEl.style.width = "fit-content";
     listEl.style.padding = "0";
@@ -132,7 +134,7 @@ async function captureAndCopy() {
                     "image/png": blob
                 })
             ]).then(() => {
-                showToast("âœ? Image copied to clipboard!");
+                showToast("Image copied to clipboard!");
             }).catch(err => {
                 showToast("Failed to copy image: " + err.message);
             });
@@ -142,4 +144,5 @@ async function captureAndCopy() {
         console.error("Capture error:", error);
     }
 }
-// ===== CAPTURE AND COPY AS IMAGE =====
+
+window.captureAndCopy = captureAndCopy;

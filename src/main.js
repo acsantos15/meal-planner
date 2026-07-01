@@ -1,0 +1,11 @@
+import './css/style.css';
+import './js/config.js';
+import './js/recipes.js';
+import './js/recipesPanel.js';
+import './js/toast.js';
+import './js/calculator.js';
+import './js/copyAsImage.js';
+import './js/people.js';
+import './js/meals.js';
+import './js/database.js';
+import './js/app.js';
